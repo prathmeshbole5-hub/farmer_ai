@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KrishiMitra AI - Simple AI Assistance for Every Farmer</title>
+  <!-- Google Fonts - Outfit for modern clean UI, Open Sans for highly readable body text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-default font-normal text-medium">
+
+  <!-- Accessibility Toolbar -->
+  <div class="accessibility-toolbar" aria-label="Accessibility settings">
+    <div class="toolbar-container">
+      <div class="text-resizer">
+        <span data-i18n="text_size">Text Size:</span>
+        <button id="btn-text-decrease" class="btn-acc" aria-label="Decrease text size">A-</button>
+        <button id="btn-text-reset" class="btn-acc active" aria-label="Reset text size">A</button>
+        <button id="btn-text-increase" class="btn-acc" aria-label="Increase text size">A+</button>
+      </div>
+      <div class="contrast-toggle">
+        <button id="btn-high-contrast" class="btn-acc" aria-label="Toggle high contrast mode">
+          <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8v16z"/></svg>
+          <span data-i18n="high_contrast">High Contrast</span>
+        </button>
+      </div>
+      <div class="language-dropdown-wrapper">
+        <label for="lang-select" class="sr-only">Select Language</label>
+        <select id="lang-select" class="lang-select" aria-label="Select Language">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="gu">ગુજરાતી (Gujarati)</option>
+          <option value="mr">मराठी (Marathi)</option>
+          <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-circle">
+          <span class="logo-emoji">🌱</span>
+        </div>
+        <div class="brand-text">
+          <h1>KrishiMitra AI</h1>
+          <p class="tagline" data-i18n="tagline">Simple AI Assistance for Every Farmer</p>
+        </div>
+      </div>
+      <div class="profile-header-badge" id="btn-view-profile-shortcut" role="button" tabindex="0" aria-label="View Profile">
+        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120&h=120" alt="Farmer Profile Pic" class="avatar-img" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f468-1f3fc-1f3fe.png'">
+        <div class="avatar-info">
+          <span class="farmer-name">Ramesh Prasad</span>
+          <span class="farmer-village" data-i18n="village_name">Kishanpur, UP</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="app-content-container">
+
+    <!-- TAB 1: HOME PAGE -->
+    <section id="view-home" class="tab-view active-view" aria-label="Home Dashboard">
+      <!-- Welcome Card -->
+      <div class="welcome-card card">
+        <h2 class="welcome-heading"><span data-i18n="welcome_greeting">Namaste</span>, Ramesh! 👋</h2>
+        <p class="welcome-subtext" data-i18n="welcome_message">Which farming service do you want to use today?</p>
+      </div>
+
+      <!-- Quick Actions Grid -->
+      <div class="section-container">
+        <h3 class="section-title" data-i18n="quick_actions">Quick Actions</h3>
+        <div class="quick-actions-grid">
+          
+          <!-- Scan Crop Card -->
+          <button class="action-card color-primary" onclick="switchTab('vision'); selectVisionModule('disease')">
+            <span class="action-icon">🌿</span>
+            <div class="action-card-text">
+              <span class="action-title" data-i18n="action_scan_crop">Scan Crop</span>
+              <span class="action-desc" data-i18n="action_scan_crop_desc">Find and cure plant diseases</span>
+            </div>
+          </button>
+
+          <!-- Soil Test Card -->
+          <button class="action-card color-primary" onclick="switchTab('vision'); selectVisionModule('soil')">
+            <span class="action-icon">🟤</span>
+            <div class="action-card-text">
+              <span class="action-title" data-i18n="action_soil_test">Soil Test</span>
+              <span class="action-desc" data-i18n="action_soil_test_desc">Check moisture & fertilizers</span>
+            </div>
+          </button>
+
+          <!-- Ask AI Card -->
+          <button class="action-card color-voice" onclick="switchTab('voice')">
+            <span class="action-icon">🎤</span>
+            <div class="action-card-text">
+              <span class="action-title" data-i18n="action_ask_ai">Ask AI (Voice)</span>
+              <span class="action-desc" data-i18n="action_ask_ai_desc">Talk in your language</span>
+            </div>
+          </button>
+
+          <!-- Weather Card -->
+          <button class="action-card color-info" onclick="switchTab('weather')">
+            <span class="action-icon">🌦</span>
+            <div class="action-card-text">
+              <span class="action-title" data-i18n="action_weather">Weather Details</span>
+              <span class="action-desc" data-i18n="action_weather_desc">7-day forecast & warnings</span>
+            </div>
+          </button>
+
+          <!-- Mandi Prices Card -->
+          <button class="action-card color-info" onclick="switchTab('market')">
+            <span class="action-icon">💰</span>
+            <div class="action-card-text">
+              <span class="action-title" data-i18n="action_mandi_prices">Mandi Prices</span>
+              <span class="action-desc" data-i18n="action_mandi_prices_desc">Compare nearby crop rates</span>
+            </div>
+          </button>
+
+          <!-- Government Schemes Card -->
+          <button class="action-card color-info" onclick="switchTab('schemes')">
+            <span class="action-icon">🏛</span>
+            <div class="action-card-text">
+              <span class="action-title" data-i18n="action_schemes">Govt Schemes</span>
+              <span class="action-desc" data-i18n="action_schemes_desc">Apply for financial support</span>
+            </div>
+          </button>
+
+          <!-- Insurance Report Card -->
+          <button class="action-card color-alert" onclick="switchTab('vision'); selectVisionModule('insurance')">
+            <span class="action-icon">📄</span>
+            <div class="action-card-text">
+              <span class="action-title" data-i18n="action_insurance">Insurance Report</span>
+              <span class="action-desc" data-i18n="action_insurance_desc">Generate damage proof reports</span>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Quick Weather Brief Card -->
+      <div class="weather-brief-card card" onclick="switchTab('weather')" role="button" tabindex="0">
+        <div class="weather-brief-header">
+          <h3 data-i18n="today_weather">Today's Weather</h3>
+          <span class="weather-badge rain" data-i18n="rain_prob_brief">🌧 80% Rain Prob.</span>
+        </div>
+        <div class="weather-brief-stats">
+          <div class="weather-temp-block">
+            <span class="weather-temp">29°C</span>
+            <span class="weather-condition" data-i18n="weather_light_rain">Light Rain</span>
+          </div>
+          <div class="weather-stat-item">
+            <span class="stat-label" data-i18n="humidity">Humidity</span>
+            <span class="stat-value">85%</span>
+          </div>
+        </div>
+        <div class="weather-warning-banner alert-yellow">
+          <span class="warning-icon">⚠</span>
+          <p class="warning-text"><strong><span data-i18n="advisory_title">Advisory:</span></strong> <span data-i18n="weather_advisory_text">Heavy rain expected tomorrow. Do not spray pesticides today.</span></p>
+        </div>
+      </div>
+
+      <!-- Recent Alerts Section -->
+      <div class="section-container">
+        <h3 class="section-title" data-i18n="recent_alerts">Recent Alerts</h3>
+        <div class="alerts-list">
+          
+          <div class="alert-item card border-red">
+            <div class="alert-header">
+              <span class="alert-tag bg-red" data-i18n="alert_disease">Disease Threat</span>
+              <span class="alert-time">2 hours ago</span>
+            </div>
+            <p class="alert-content"><strong><span data-i18n="rice_blast_detected">Rice Blast disease</span></strong> <span data-i18n="rice_blast_detected_desc">was reported in nearby village Laxmipur. Keep fields drained and monitor crop carefully.</span></p>
+          </div>
+
+          <div class="alert-item card border-yellow">
+            <div class="alert-header">
+              <span class="alert-tag bg-yellow" data-i18n="alert_market">Market Update</span>
+              <span class="alert-time">5 hours ago</span>
+            </div>
+            <p class="alert-content"><span data-i18n="paddy_prices_up">Paddy (धान) prices in nearby Mandi increased by</span> <strong>₹120/quintal</strong>. <span data-i18n="paddy_prices_up_desc">Good time to harvest and sell.</span></p>
+          </div>
+
+          <div class="alert-item card border-blue">
+            <div class="alert-header">
+              <span class="alert-tag bg-blue" data-i18n="alert_scheme">New Scheme</span>
+              <span class="alert-time">1 day ago</span>
+            </div>
+            <p class="alert-content"><strong><span data-i18n="pm_kusum_scheme">PM Kusum Yojana</span></strong> <span data-i18n="pm_kusum_scheme_desc">registration is now open in your block. Apply to get 60% subsidy on Solar Water Pumps.</span></p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: VISION LAB -->
+    <section id="view-vision" class="tab-view" aria-label="AI Vision Lab">
+      <div class="vision-header-card card">
+        <h2 class="section-main-title" data-i18n="vision_lab_title">🌱 AI Vision Lab</h2>
+        <p class="section-main-subtitle" data-i18n="vision_lab_subtitle">Upload one image of your crop, soil or produce to get multiple agricultural insights.</p>
+      </div>
+
+      <!-- Vision Module Selector (Large horizontal Pills) -->
+      <div class="vision-pills-container" role="tablist">
+        <button id="pill-disease" class="vision-pill active" onclick="selectVisionModule('disease')" role="tab" aria-selected="true" data-i18n="pill_disease">🌿 Disease Scanner</button>
+        <button id="pill-soil" class="vision-pill" onclick="selectVisionModule('soil')" role="tab" aria-selected="false" data-i18n="pill_soil">🟤 Soil Analyzer</button>
+        <button id="pill-growth" class="vision-pill" onclick="selectVisionModule('growth')" role="tab" aria-selected="false" data-i18n="pill_growth">🌾 Growth Monitor</button>
+        <button id="pill-grade" class="vision-pill" onclick="selectVisionModule('grade')" role="tab" aria-selected="false" data-i18n="pill_grade">🍅 Quality Grader</button>
+        <button id="pill-insurance" class="vision-pill" onclick="selectVisionModule('insurance')" role="tab" aria-selected="false" data-i18n="pill_insurance">📄 Insurance Claim</button>
+      </div>
+
+      <!-- Active Vision Content Area -->
+      <div class="vision-module-content card">
+        
+        <!-- Upload & Capture Panel (Shared Layout per module) -->
+        <div class="vision-upload-panel">
+          <div class="upload-area" id="vision-dropzone">
+            <input type="file" id="vision-file-input" accept="image/*" class="sr-only">
+            
+            <div id="upload-prompt" class="upload-prompt-content">
+              <span class="upload-icon">📷</span>
+              <p class="upload-title" data-i18n="upload_prompt_title">Drag your photo here or tap either button below</p>
+              <p class="upload-support" data-i18n="upload_prompt_support">Supports JPG, PNG photos taken on your farm</p>
+            </div>
+
+            <!-- Image Preview Box -->
+            <div id="image-preview-container" class="image-preview-container hidden">
+              <img id="image-preview" src="#" alt="Farmer Uploaded Crop Photo">
+              <button id="btn-remove-preview" class="btn-remove-img" aria-label="Remove Image">✕</button>
+            </div>
+          </div>
+
+          <!-- Quick Sample Selector for Easy Testing in Hackathon -->
+          <div class="sample-image-selector">
+            <span class="sample-label" data-i18n="sample_label">Or choose a test farm photo:</span>
+            <div class="sample-pills" id="sample-pills-container">
+              <!-- Dynamically populated sample images buttons -->
+            </div>
+          </div>
+
+          <!-- Controls Buttons -->
+          <div class="upload-controls">
+            <button id="btn-camera" class="btn-outline-primary btn-large">
+              <svg class="icon-md" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2m8 3a5 5 0 0 0-5 5a5 5 0 0 0 5 5a5 5 0 0 0 5-5a5 5 0 0 0-5-5m0 2a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3z"/></svg>
+              <span data-i18n="take_photo">Take Photo</span>
+            </button>
+            <button id="btn-upload" class="btn-outline-primary btn-large">
+              <svg class="icon-md" viewBox="0 0 24 24"><path fill="currentColor" d="M9 16h6v-6h4l-7-7l-7 7h4v6m-4 2h16v2H5v-2z"/></svg>
+              <span data-i18n="upload_photo">Upload Image</span>
+            </button>
+          </div>
+
+          <!-- Main Action Button -->
+          <button id="btn-analyze" class="btn-primary btn-block btn-xlarge font-semibold" disabled>
+            <span data-i18n="btn_analyze_action">Analyze with KrishiMitra AI</span>
+          </button>
+        </div>
+
+        <!-- Simulated Analysis Loading State -->
+        <div id="analysis-loading" class="analysis-loading hidden">
+          <div class="spinner"></div>
+          <p class="loading-heading" data-i18n="analyzing_with_ai">Processing Crop Image...</p>
+          <p class="loading-subheading" data-i18n="loading_subtext">Analyzing soil condition, leaf health, and structures</p>
+        </div>
+
+        <!-- Dynamic Output Section (populated via script) -->
+        <div id="vision-results-area" class="vision-results-area hidden">
+          <!-- Dynamically filled with disease, soil, growth, produce, or insurance layout -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: VOICE ASSISTANT -->
+    <section id="view-voice" class="tab-view" aria-label="Voice Assistant">
+      <div class="voice-hero card">
+        <div class="assistant-logo">🎙</div>
+        <h2 class="voice-title" data-i18n="voice_title">Ask KrishiMitra voice AI</h2>
+        <p class="voice-desc" data-i18n="voice_desc">Hold the microphone and ask your questions. Speak in your native language.</p>
+        
+        <!-- Assistant Language Selector -->
+        <div class="voice-lang-bar">
+          <span data-i18n="speaking_in">Speaking:</span>
+          <select id="voice-lang-select" class="voice-lang-select">
+            <option value="en-IN">English</option>
+            <option value="hi-IN">हिन्दी (Hindi)</option>
+            <option value="gu-IN">ગુજરાતી (Gujarati)</option>
+            <option value="mr-IN">मराठी (Marathi)</option>
+            <option value="pa-IN">ਪੰਜਾਬੀ (Punjabi)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Chat History Screen (WhatsApp visual Style) -->
+      <div class="chat-container card">
+        <div class="chat-messages" id="chat-messages-box">
+          <div class="chat-bubble bot-message">
+            <p data-i18n="bot_welcome_msg">Namaste! I am your KrishiMitra assistant. How can I help you with your crops, weather, or market prices today?</p>
+            <span class="chat-time">11:20 AM</span>
+          </div>
+        </div>
+
+        <!-- Microphone Interaction Box -->
+        <div class="mic-controls-container">
+          <div class="mic-status-label" id="mic-status-label" data-i18n="mic_status_idle">Tap the microphone to ask a question</div>
+          
+          <button id="btn-microphone" class="btn-mic-circle" aria-label="Microphone, Tap to speak">
+            <div class="mic-wave-pulse" id="mic-pulse"></div>
+            <svg class="icon-mic" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3m0 2a1 1 0 0 1 1 1v7a1 1 0 0 1-2 0V5a1 1 0 0 1 1-1m-7 8v1a7 7 0 0 0 14 0v-1h-2v1a5 5 0 0 1-10 0v-1H5m5 6h4v3h-4v-3z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Suggested Quick Questions -->
+        <div class="suggested-questions-container">
+          <span class="suggestion-heading" data-i18n="suggested_questions">Try asking these:</span>
+          <div class="suggestions-list" id="voice-suggestions-list">
+            <button class="btn-suggestion" onclick="askPresetQuestion(this.innerText)">"What crops are best for black soil?"</button>
+            <button class="btn-suggestion" onclick="askPresetQuestion(this.innerText)">"Why are my rice crop leaves turning yellow?"</button>
+            <button class="btn-suggestion" onclick="askPresetQuestion(this.innerText)">"What is the wheat price in Mandi today?"</button>
+            <button class="btn-suggestion" onclick="askPresetQuestion(this.innerText)">"How do I apply for PM-KISAN?"</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: WEATHER PAGE -->
+    <section id="view-weather" class="tab-view" aria-label="Weather Forecast">
+      <div class="weather-current-hero card">
+        <div class="current-weather-split">
+          <div class="current-weather-main">
+            <h2 class="weather-location" data-i18n="village_kisankot">Kisankot Village, Uttar Pradesh</h2>
+            <div class="weather-status-wrap">
+              <span class="weather-main-emoji">🌦</span>
+              <div>
+                <span class="weather-main-temp">29°C</span>
+                <p class="weather-main-desc" data-i18n="weather_light_rain">Light Rain & Thunderstorms</p>
+              </div>
+            </div>
+          </div>
+          <div class="weather-details-grid">
+            <div class="weather-detail-pill">
+              <span class="label" data-i18n="humidity">Humidity</span>
+              <span class="value">85%</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label" data-i18n="wind">Wind</span>
+              <span class="value">14 km/h</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label" data-i18n="rain_probability">Rain Prob.</span>
+              <span class="value">80%</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label" data-i18n="temp_feels">Feels Like</span>
+              <span class="value">33°C</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="weather-advice-alert alert-blue">
+          <div class="alert-icon-wrap">🤖</div>
+          <div class="alert-content-wrap">
+            <h4 class="advice-heading" data-i18n="weather_ai_advice">AI Crop Advisory</h4>
+            <p class="advice-text" data-i18n="weather_ai_advice_text">Rain showers expected for the next 24 hours. Postpone nitrogen/urea fertilizer applications. Keep drainage channels open in vegetable beds to prevent water logging.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forecast Cards Section -->
+      <div class="section-container">
+        <h3 class="section-title" data-i18n="weekly_forecast">7-Day Weather Forecast</h3>
+        <div class="forecast-list">
+          
+          <div class="forecast-day-card card">
+            <div class="day-info">
+              <span class="day-name" data-i18n="day_today">Today</span>
+              <span class="day-date">Aug 4</span>
+            </div>
+            <span class="forecast-emoji">🌦</span>
+            <div class="forecast-range">
+              <span class="high">31°</span>
+              <span class="low">24°</span>
+            </div>
+            <span class="forecast-tag rain" data-i18n="weather_label_rain">Rainy</span>
+          </div>
+
+          <div class="forecast-day-card card">
+            <div class="day-info">
+              <span class="day-name" data-i18n="day_tomorrow">Tomorrow</span>
+              <span class="day-date">Aug 5</span>
+            </div>
+            <span class="forecast-emoji">🌧</span>
+            <div class="forecast-range">
+              <span class="high">28°</span>
+              <span class="low">23°</span>
+            </div>
+            <span class="forecast-tag heavy-rain" data-i18n="weather_label_heavy_rain">Heavy Rain</span>
+          </div>
+
+          <div class="forecast-day-card card">
+            <div class="day-info">
+              <span class="day-name">Thursday</span>
+              <span class="day-date">Aug 6</span>
+            </div>
+            <span class="forecast-emoji">🌦</span>
+            <div class="forecast-range">
+              <span class="high">30°</span>
+              <span class="low">25°</span>
+            </div>
+            <span class="forecast-tag rain" data-i18n="weather_label_rain">Rainy</span>
+          </div>
+
+          <div class="forecast-day-card card">
+            <div class="day-info">
+              <span class="day-name">Friday</span>
+              <span class="day-date">Aug 7</span>
+            </div>
+            <span class="forecast-emoji">☁</span>
+            <div class="forecast-range">
+              <span class="high">32°</span>
+              <span class="low">25°</span>
+            </div>
+            <span class="forecast-tag cloudy" data-i18n="weather_label_cloudy">Cloudy</span>
+          </div>
+
+          <div class="forecast-day-card card">
+            <div class="day-info">
+              <span class="day-name">Saturday</span>
+              <span class="day-date">Aug 8</span>
+            </div>
+            <span class="forecast-emoji">☀️</span>
+            <div class="forecast-range">
+              <span class="high">33°</span>
+              <span class="low">26°</span>
+            </div>
+            <span class="forecast-tag sunny" data-i18n="weather_label_sunny">Sunny</span>
+          </div>
+
+          <div class="forecast-day-card card">
+            <div class="day-info">
+              <span class="day-name">Sunday</span>
+              <span class="day-date">Aug 9</span>
+            </div>
+            <span class="forecast-emoji">☀️</span>
+            <div class="forecast-range">
+              <span class="high">34°</span>
+              <span class="low">26°</span>
+            </div>
+            <span class="forecast-tag sunny" data-i18n="weather_label_sunny">Sunny</span>
+          </div>
+
+          <div class="forecast-day-card card">
+            <div class="day-info">
+              <span class="day-name">Monday</span>
+              <span class="day-date">Aug 10</span>
+            </div>
+            <span class="forecast-emoji">⛅</span>
+            <div class="forecast-range">
+              <span class="high">33°</span>
+              <span class="low">25°</span>
+            </div>
+            <span class="forecast-tag cloudy" data-i18n="weather_label_cloudy">Cloudy</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: MARKET PAGE -->
+    <section id="view-market" class="tab-view" aria-label="Mandi Prices">
+      <div class="market-header-card card">
+        <h2 class="market-main-title" data-i18n="market_mandi_prices">💰 Mandi Crop Prices</h2>
+        <p class="market-main-subtitle" data-i18n="market_mandi_subtitle">Search crops to find high-paying buyers and prices in nearby government APMCs.</p>
+        
+        <!-- Crop Search Bar -->
+        <div class="search-bar-wrap">
+          <input type="text" id="market-search-input" placeholder="Search crop (e.g. Paddy, Wheat, Tomato)..." class="input-search">
+          <button id="btn-clear-search" class="btn-clear-search hidden">✕</button>
+        </div>
+      </div>
+
+      <!-- Crop Details & Pricing charts (shown once crop selected or default Paddy) -->
+      <div class="crop-analysis-card card" id="market-crop-details">
+        <div class="crop-title-row">
+          <div>
+            <h3 class="crop-selected-name" id="market-crop-name">Paddy (धान - Basmati)</h3>
+            <span class="price-update-time" data-i18n="rates_updated_today">Rates updated: Today, 10:00 AM</span>
+          </div>
+          <span class="crop-emoji-badge" id="market-crop-emoji">🌾</span>
+        </div>
+
+        <div class="mandi-highlight-grid">
+          <div class="mandi-highlight-box border-green">
+            <span class="box-label" data-i18n="mandi_highest">Highest Price</span>
+            <span class="box-price text-green" id="market-high-price">₹2,350 / Qtl</span>
+            <span class="box-mandi-name" id="market-high-mandi">Laxmipur APMC (12km)</span>
+          </div>
+          <div class="mandi-highlight-box border-red">
+            <span class="box-label" data-i18n="mandi_lowest">Lowest Price</span>
+            <span class="box-price text-red" id="market-low-price">₹2,050 / Qtl</span>
+            <span class="box-mandi-name" id="market-low-mandi">Kishanpur Mandi (4km)</span>
+          </div>
+        </div>
+
+        <!-- Mandi Price Comparison Visual Bar Chart -->
+        <div class="mandi-chart-container">
+          <h4 class="chart-title" data-i18n="price_comparison_chart">Price Comparison across Nearby Mandis</h4>
+          <div class="mandi-chart-bars" id="mandi-chart-bars">
+            <!-- Dynamic Chart Bars generated via Script -->
+          </div>
+          <div class="best-market-recommendation alert-green">
+            <span>💡</span>
+            <p><strong><span data-i18n="recommendation_bold">Best Market recommendation:</span></strong> <span data-i18n="paddy_sell_advise">Selling at Laxmipur APMC gives ₹300/quintal more. Transport cost is ₹40, net profit is higher.</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mandi List Section -->
+      <div class="section-container">
+        <h3 class="section-title" data-i18n="all_nearby_mandis">All Mandis and Prices</h3>
+        <div class="mandi-list" id="mandi-list-items">
+          <!-- Filled by Script -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: SCHEMES PAGE -->
+    <section id="view-schemes" class="tab-view" aria-label="Government Schemes">
+      <div class="schemes-header-card card">
+        <h2 class="section-main-title" data-i18n="schemes_title">🏛 Government Schemes</h2>
+        <p class="section-main-subtitle" data-i18n="schemes_subtitle">Find direct financial assistance, subsidies, and free inputs from Central & State Govts.</p>
+        
+        <!-- Filter Tabs for Schemes -->
+        <div class="schemes-filter-bar">
+          <button class="scheme-filter-btn active" onclick="filterSchemes('all')" data-i18n="scheme_filter_all">All Schemes</button>
+          <button class="scheme-filter-btn" onclick="filterSchemes('subsidy')" data-i18n="scheme_filter_subsidy">Subsidies</button>
+          <button class="scheme-filter-btn" onclick="filterSchemes('insurance')" data-i18n="scheme_filter_insurance">Insurance</button>
+          <button class="scheme-filter-btn" onclick="filterSchemes('bookmarked')" data-i18n="scheme_filter_bookmarked">★ Bookmarked</button>
+        </div>
+      </div>
+
+      <!-- Schemes Cards List -->
+      <div class="schemes-grid" id="schemes-container">
+        <!-- Dynamically rendered via Script -->
+      </div>
+    </section>
+
+    <!-- TAB 7: PROFILE PAGE -->
+    <section id="view-profile" class="tab-view" aria-label="Farmer Profile">
+      <!-- Profile Detail Card -->
+      <div class="farmer-profile-card card">
+        <div class="profile-hero-top">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120&h=120" alt="Farmer Profile Pic" class="profile-avatar" id="profile-avatar-img">
+          <div class="profile-meta">
+            <h2 id="profile-display-name">Ramesh Prasad</h2>
+            <p class="location-badge">📍 Kishanpur, Uttar Pradesh</p>
+            <p class="member-badge" data-i18n="registered_since">Registered since Oct 2024</p>
+          </div>
+        </div>
+        
+        <form class="profile-form" id="farmer-profile-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prof-name" data-i18n="lbl_name">Farmer Name</label>
+              <input type="text" id="prof-name" value="Ramesh Prasad" class="input-form">
+            </div>
+            <div class="form-group">
+              <label for="prof-phone" data-i18n="lbl_phone">Mobile Number</label>
+              <input type="text" id="prof-phone" value="+91 98765 43210" class="input-form">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prof-village" data-i18n="lbl_village">Village</label>
+              <input type="text" id="prof-village" value="Kishanpur" class="input-form">
+            </div>
+            <div class="form-group">
+              <label for="prof-district" data-i18n="lbl_district">District</label>
+              <input type="text" id="prof-district" value="Gorakhpur" class="input-form">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prof-acres" data-i18n="lbl_land">Land Size (Acres)</label>
+              <input type="number" id="prof-acres" value="2.5" step="0.1" class="input-form">
+            </div>
+            <div class="form-group">
+              <label for="prof-soil" data-i18n="lbl_soil_type">Soil Type</label>
+              <select id="prof-soil" class="input-form">
+                <option value="Alluvial" selected>Alluvial (दोमट)</option>
+                <option value="Black">Black (काली मिट्टी)</option>
+                <option value="Red">Red (लाल मिट्टी)</option>
+                <option value="Sandy">Sandy (रेतीली)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="prof-crops" data-i18n="lbl_active_crops">Active Crops Grown</label>
+            <input type="text" id="prof-crops" value="Rice, Wheat, Tomato" class="input-form">
+          </div>
+          <button type="submit" class="btn-primary btn-large btn-block font-semibold" data-i18n="save_profile">Save Profile Information</button>
+        </form>
+      </div>
+
+      <!-- History of Generated AI Reports -->
+      <div class="section-container">
+        <h3 class="section-title" data-i18n="reports_history">Your Saved AI Reports</h3>
+        <div class="reports-history-list" id="reports-history-container">
+          <!-- Filled by Script -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Bar (Google Pay/WhatsApp style) -->
+  <nav class="bottom-navigation-bar" aria-label="Main Navigation">
+    <div class="nav-container">
+      
+      <!-- Home Link -->
+      <button class="nav-item active" onclick="switchTab('home')" id="nav-btn-home" aria-label="Home Dashboard">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8h5z"/></svg>
+        </div>
+        <span class="nav-label" data-i18n="nav_home">Home</span>
+      </button>
+
+      <!-- Vision Lab Link -->
+      <button class="nav-item" onclick="switchTab('vision')" id="nav-btn-vision" aria-label="AI Vision Lab">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7V3m0 4a5 5 0 1 0 5 5h-2a3 3 0 1 1-3-3V7z"/></svg>
+        </div>
+        <span class="nav-label" data-i18n="nav_vision">Vision Lab</span>
+      </button>
+
+      <!-- Voice Assistant Link -->
+      <button class="nav-item" onclick="switchTab('voice')" id="nav-btn-voice" aria-label="Voice AI Assistant">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3m5 10h2a7 7 0 0 1-14 0h2a5 5 0 0 0 10 0z"/></svg>
+        </div>
+        <span class="nav-label" data-i18n="nav_voice">Voice AI</span>
+      </button>
+
+      <!-- Mandi Prices Link -->
+      <button class="nav-item" onclick="switchTab('market')" id="nav-btn-market" aria-label="Market Mandi Prices">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41a2 2 0 0 0-2-2a2 2 0 0 0-2 2H7a4 4 0 0 1 4-4a4 4 0 0 1 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        </div>
+        <span class="nav-label" data-i18n="nav_mandi">Market</span>
+      </button>
+
+      <!-- Schemes Link -->
+      <button class="nav-item" onclick="switchTab('schemes')" id="nav-btn-schemes" aria-label="Government Schemes">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3L2 12h3v8h14v-8h3L12 3zm0 3.25L17.75 11v7H6.25v-7L12 6.25z"/></svg>
+        </div>
+        <span class="nav-label" data-i18n="nav_schemes">Schemes</span>
+      </button>
+
+      <!-- Profile Link -->
+      <button class="nav-item" onclick="switchTab('profile')" id="nav-btn-profile" aria-label="Farmer Profile">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3s-3-1.34-3-3s1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22c.03-1.99 4-3.08 6-3.08c1.99 0 5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+        </div>
+        <span class="nav-label" data-i18n="nav_profile">Profile</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- MODAL: Scheme Detail & Apply Wizard -->
+  <div id="scheme-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-scheme-title">
+    <div class="modal-backdrop" onclick="closeSchemeModal()"></div>
+    <div class="modal-content card">
+      <button class="btn-close-modal" onclick="closeSchemeModal()" aria-label="Close modal">✕</button>
+      
+      <div id="scheme-modal-details">
+        <!-- Rendered by script -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Full Screen Printable Report Viewer -->
+  <div id="report-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-report-title">
+    <div class="modal-backdrop" onclick="closeReportModal()"></div>
+    <div class="modal-content report-modal-content card">
+      <button class="btn-close-modal" onclick="closeReportModal()" aria-label="Close modal">✕</button>
+      
+      <div class="report-header-print">
+        <span class="print-emoji">🌱</span>
+        <h2 id="modal-report-title">KrishiMitra AI Report</h2>
+        <span class="print-verified-badge" data-i18n="ai_verified">AI Verified Report</span>
+      </div>
+
+      <div id="report-modal-body" class="report-modal-body">
+        <!-- Filled by Script -->
+      </div>
+
+      <div class="report-actions no-print">
+        <button id="btn-print-report" class="btn-primary btn-large font-semibold">
+          <svg class="icon-md" viewBox="0 0 24 24"><path fill="currentColor" d="M18 3H6v4h12V3m1 5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3m-3 11H8v-5h8v5m3-7c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1z"/></svg>
+          <span data-i18n="download_pdf">Print / Save PDF</span>
+        </button>
+        <button onclick="closeReportModal()" class="btn-outline-primary btn-large font-semibold">
+          <span data-i18n="close">Close</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio elements for assistive sound feedback -->
+  <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
+  <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/951/951-84.wav" preload="auto"></audio>
+  <audio id="snd-chime" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
