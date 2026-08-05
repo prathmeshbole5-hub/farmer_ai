@@ -333,143 +333,149 @@
 
     <!-- TAB 4: WEATHER PAGE -->
     <section id="view-weather" class="tab-view" aria-label="Weather Forecast">
+      <!-- Location Search & Status Info -->
+      <div class="weather-location-bar card">
+        <div class="location-search-wrap">
+          <button id="btn-geolocation" class="btn-geo" onclick="triggerGeolocation()">
+            📍 <span data-i18n="btn_use_gps">Use GPS Location</span>
+          </button>
+          <div class="search-input-wrap">
+            <input type="text" id="weather-search-input" placeholder="Search Village, City, Pincode..." class="input-search">
+            <button id="btn-weather-search" class="btn-search-go" onclick="triggerManualWeatherSearch()">🔍 Search</button>
+          </div>
+        </div>
+        <div class="weather-status-meta">
+          <div class="location-details">
+            <h2 id="weather-location-name" class="weather-location">Detecting Location...</h2>
+            <span id="weather-offline-badge" class="offline-warning-badge hidden">⚠️ Offline Mode</span>
+          </div>
+          <div class="refresh-details">
+            <span id="weather-last-updated" class="last-updated-text">Last Updated: Just now</span>
+            <button id="btn-weather-refresh" class="btn-refresh-icon" onclick="triggerWeatherRefresh()" aria-label="Refresh weather">🔄</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Weather Hero -->
       <div class="weather-current-hero card">
         <div class="current-weather-split">
           <div class="current-weather-main">
-            <h2 class="weather-location" data-i18n="village_kisankot">Kisankot Village, Uttar Pradesh</h2>
             <div class="weather-status-wrap">
-              <span class="weather-main-emoji">🌦</span>
+              <span id="weather-hero-emoji" class="weather-main-emoji">🌤</span>
               <div>
-                <span class="weather-main-temp">29°C</span>
-                <p class="weather-main-desc" data-i18n="weather_light_rain">Light Rain & Thunderstorms</p>
+                <span id="weather-hero-temp" class="weather-main-temp">--°C</span>
+                <p id="weather-hero-desc" class="weather-main-desc">Fetch in progress...</p>
               </div>
             </div>
           </div>
           <div class="weather-details-grid">
             <div class="weather-detail-pill">
-              <span class="label" data-i18n="humidity">Humidity</span>
-              <span class="value">85%</span>
+              <span class="label" data-i18n="temp_feels">Feels Like</span>
+              <span id="weather-detail-feels" class="value">--°C</span>
             </div>
             <div class="weather-detail-pill">
-              <span class="label" data-i18n="wind">Wind</span>
-              <span class="value">14 km/h</span>
+              <span class="label" data-i18n="humidity">Humidity</span>
+              <span id="weather-detail-humidity" class="value">--%</span>
             </div>
             <div class="weather-detail-pill">
               <span class="label" data-i18n="rain_probability">Rain Prob.</span>
-              <span class="value">80%</span>
+              <span id="weather-detail-rain" class="value">--%</span>
             </div>
             <div class="weather-detail-pill">
-              <span class="label" data-i18n="temp_feels">Feels Like</span>
-              <span class="value">33°C</span>
+              <span class="label" data-i18n="wind">Wind</span>
+              <span id="weather-detail-wind" class="value">-- km/h --</span>
             </div>
-          </div>
-        </div>
-
-        <div class="weather-advice-alert alert-blue">
-          <div class="alert-icon-wrap">🤖</div>
-          <div class="alert-content-wrap">
-            <h4 class="advice-heading" data-i18n="weather_ai_advice">AI Crop Advisory</h4>
-            <p class="advice-text" data-i18n="weather_ai_advice_text">Rain showers expected for the next 24 hours. Postpone nitrogen/urea fertilizer applications. Keep drainage channels open in vegetable beds to prevent water logging.</p>
+            <div class="weather-detail-pill">
+              <span class="label">Pressure</span>
+              <span id="weather-detail-pressure" class="value">-- hPa</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label">Visibility</span>
+              <span id="weather-detail-visibility" class="value">-- km</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label">UV Index</span>
+              <span id="weather-detail-uv" class="value">--</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label">Cloud Cover</span>
+              <span id="weather-detail-clouds" class="value">--%</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label">Sunrise</span>
+              <span id="weather-detail-sunrise" class="value">--:-- AM</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label">Sunset</span>
+              <span id="weather-detail-sunset" class="value">--:-- PM</span>
+            </div>
+            <div class="weather-detail-pill">
+              <span class="label">Air Quality (AQI)</span>
+              <span id="weather-detail-aqi" class="value">-- --</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Forecast Cards Section -->
-      <div class="section-container">
+      <!-- Real-time Weather Alerts Container -->
+      <div id="weather-alerts-container" class="weather-alerts-wrapper">
+        <!-- Alerts will dynamically render here -->
+      </div>
+
+      <!-- 24-Hour Forecast Section -->
+      <div class="section-container card" style="margin-top: var(--spacing-md); padding: var(--spacing-md);">
+        <h3 class="section-title">24-Hour Forecast</h3>
+        <div id="weather-hourly-list" class="hourly-forecast-list">
+          <!-- Hourly items will dynamically render here -->
+        </div>
+      </div>
+
+      <!-- 7-Day Forecast Section -->
+      <div class="section-container" style="margin-top: var(--spacing-md);">
         <h3 class="section-title" data-i18n="weekly_forecast">7-Day Weather Forecast</h3>
-        <div class="forecast-list">
-          
-          <div class="forecast-day-card card">
-            <div class="day-info">
-              <span class="day-name" data-i18n="day_today">Today</span>
-              <span class="day-date">Aug 4</span>
-            </div>
-            <span class="forecast-emoji">🌦</span>
-            <div class="forecast-range">
-              <span class="high">31°</span>
-              <span class="low">24°</span>
-            </div>
-            <span class="forecast-tag rain" data-i18n="weather_label_rain">Rainy</span>
-          </div>
+        <div id="weather-daily-list" class="forecast-list">
+          <!-- Daily items will dynamically render here -->
+        </div>
+      </div>
 
-          <div class="forecast-day-card card">
-            <div class="day-info">
-              <span class="day-name" data-i18n="day_tomorrow">Tomorrow</span>
-              <span class="day-date">Aug 5</span>
-            </div>
-            <span class="forecast-emoji">🌧</span>
-            <div class="forecast-range">
-              <span class="high">28°</span>
-              <span class="low">23°</span>
-            </div>
-            <span class="forecast-tag heavy-rain" data-i18n="weather_label_heavy_rain">Heavy Rain</span>
-          </div>
+      <!-- AI Weather Farming Advisor Panel -->
+      <div class="weather-ai-advisor-panel card">
+        <div class="ai-advisor-header">
+          <span class="ai-sparkle">✨</span>
+          <h3>AI Weather Farming Advisor</h3>
+          <span class="ai-badge">Gemini AI</span>
+        </div>
+        
+        <div class="crop-select-row">
+          <label for="weather-crop-select">Select your Crop:</label>
+          <select id="weather-crop-select" class="input-form-sm">
+            <option value="Tomato" selected>🍅 Tomato</option>
+            <option value="Rice">🌾 Rice (Paddy)</option>
+            <option value="Wheat">🌾 Wheat</option>
+            <option value="Cotton">🌱 Cotton</option>
+            <option value="Onion">🧅 Onion</option>
+            <option value="Sugarcane">🎋 Sugarcane</option>
+          </select>
+          <button id="btn-get-weather-advisory" class="btn-primary" onclick="triggerCropAdvisory()">
+            Generate Advice
+          </button>
+        </div>
 
-          <div class="forecast-day-card card">
-            <div class="day-info">
-              <span class="day-name">Thursday</span>
-              <span class="day-date">Aug 6</span>
-            </div>
-            <span class="forecast-emoji">🌦</span>
-            <div class="forecast-range">
-              <span class="high">30°</span>
-              <span class="low">25°</span>
-            </div>
-            <span class="forecast-tag rain" data-i18n="weather_label_rain">Rainy</span>
-          </div>
+        <!-- AI Loading State -->
+        <div id="weather-ai-loading" class="analysis-loading hidden" style="padding: var(--spacing-md) 0;">
+          <div class="spinner" style="width:24px; height:24px; border-width:3px; margin: 10px auto;"></div>
+          <p style="font-weight:700; text-align:center;">Querying Gemini AI for Crop Advisory...</p>
+        </div>
 
-          <div class="forecast-day-card card">
-            <div class="day-info">
-              <span class="day-name">Friday</span>
-              <span class="day-date">Aug 7</span>
+        <!-- AI Advice Container -->
+        <div id="weather-ai-advice-box" class="ai-advice-details">
+          <div class="weather-advice-alert alert-blue">
+            <div class="alert-icon-wrap">🤖</div>
+            <div class="alert-content-wrap">
+              <h4 class="advice-heading">AI Crop Advisory</h4>
+              <p class="advice-text">Select your crop and click "Generate Advice" to receive a personalized farming advisory from Gemini AI based on current weather parameters.</p>
             </div>
-            <span class="forecast-emoji">☁</span>
-            <div class="forecast-range">
-              <span class="high">32°</span>
-              <span class="low">25°</span>
-            </div>
-            <span class="forecast-tag cloudy" data-i18n="weather_label_cloudy">Cloudy</span>
           </div>
-
-          <div class="forecast-day-card card">
-            <div class="day-info">
-              <span class="day-name">Saturday</span>
-              <span class="day-date">Aug 8</span>
-            </div>
-            <span class="forecast-emoji">☀️</span>
-            <div class="forecast-range">
-              <span class="high">33°</span>
-              <span class="low">26°</span>
-            </div>
-            <span class="forecast-tag sunny" data-i18n="weather_label_sunny">Sunny</span>
-          </div>
-
-          <div class="forecast-day-card card">
-            <div class="day-info">
-              <span class="day-name">Sunday</span>
-              <span class="day-date">Aug 9</span>
-            </div>
-            <span class="forecast-emoji">☀️</span>
-            <div class="forecast-range">
-              <span class="high">34°</span>
-              <span class="low">26°</span>
-            </div>
-            <span class="forecast-tag sunny" data-i18n="weather_label_sunny">Sunny</span>
-          </div>
-
-          <div class="forecast-day-card card">
-            <div class="day-info">
-              <span class="day-name">Monday</span>
-              <span class="day-date">Aug 10</span>
-            </div>
-            <span class="forecast-emoji">⛅</span>
-            <div class="forecast-range">
-              <span class="high">33°</span>
-              <span class="low">25°</span>
-            </div>
-            <span class="forecast-tag cloudy" data-i18n="weather_label_cloudy">Cloudy</span>
-          </div>
-
         </div>
       </div>
     </section>
@@ -535,16 +541,109 @@
     <!-- TAB 6: SCHEMES PAGE -->
     <section id="view-schemes" class="tab-view" aria-label="Government Schemes">
       <div class="schemes-header-card card">
-        <h2 class="section-main-title" data-i18n="schemes_title">🏛 Government Schemes</h2>
-        <p class="section-main-subtitle" data-i18n="schemes_subtitle">Find direct financial assistance, subsidies, and free inputs from Central & State Govts.</p>
-        
-        <!-- Filter Tabs for Schemes -->
-        <div class="schemes-filter-bar">
-          <button class="scheme-filter-btn active" onclick="filterSchemes('all')" data-i18n="scheme_filter_all">All Schemes</button>
-          <button class="scheme-filter-btn" onclick="filterSchemes('subsidy')" data-i18n="scheme_filter_subsidy">Subsidies</button>
-          <button class="scheme-filter-btn" onclick="filterSchemes('insurance')" data-i18n="scheme_filter_insurance">Insurance</button>
-          <button class="scheme-filter-btn" onclick="filterSchemes('bookmarked')" data-i18n="scheme_filter_bookmarked">★ Bookmarked</button>
+        <h2 class="section-main-title" data-i18n="schemes_title">🏛 Government Schemes & Assistance</h2>
+        <p class="section-main-subtitle" data-i18n="schemes_subtitle">Find direct financial assistance, subsidies, solar water pumps, and crop insurance from Central & State Govts.</p>
+      </div>
+
+      <!-- AI Recommendations Panel -->
+      <div id="schemes-ai-recommendations" class="ai-recommendations-panel card">
+        <div class="ai-rec-header">
+          <span class="ai-sparkle">✨</span>
+          <h3 data-i18n="ai_recommendations_title">AI Personalized Recommendations</h3>
+          <span class="ai-badge">Gemini AI</span>
         </div>
+        <p id="ai-rec-text" class="ai-rec-content">Analyzing your profile details to recommend the most relevant schemes...</p>
+      </div>
+
+      <!-- Smart Filters Container -->
+      <div class="schemes-filters-wrapper card">
+        <!-- Search & Filter Category Row -->
+        <div class="filter-main-row">
+          <div class="search-bar-wrap flex-grow">
+            <input type="text" id="scheme-search-input" placeholder="Search schemes (e.g. Kisan, Solar, Drip)..." class="input-search">
+            <button id="btn-clear-scheme-search" class="btn-clear-search hidden" onclick="clearSchemeSearch()">✕</button>
+          </div>
+          <div class="schemes-filter-bar">
+            <button class="scheme-filter-btn active" onclick="filterSchemesCategory('all')" id="filter-btn-all" data-i18n="scheme_filter_all">All Schemes</button>
+            <button class="scheme-filter-btn" onclick="filterSchemesCategory('subsidy')" id="filter-btn-subsidy" data-i18n="scheme_filter_subsidy">Subsidies</button>
+            <button class="scheme-filter-btn" onclick="filterSchemesCategory('insurance')" id="filter-btn-insurance" data-i18n="scheme_filter_insurance">Insurance</button>
+            <button class="scheme-filter-btn" onclick="filterSchemesCategory('bookmarked')" id="filter-btn-bookmarked" data-i18n="scheme_filter_bookmarked">★ Bookmarked</button>
+          </div>
+        </div>
+
+        <!-- Filter Dropdowns Row -->
+        <div class="filter-advanced-row">
+          <div class="filter-group-item">
+            <label for="filter-state">State</label>
+            <select id="filter-state" class="input-form-sm" onchange="applyAllFilters()">
+              <option value="all">All States</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Bihar">Bihar</option>
+            </select>
+          </div>
+          <div class="filter-group-item">
+            <label for="filter-category">Farmer Category</label>
+            <select id="filter-category" class="input-form-sm" onchange="applyAllFilters()">
+              <option value="all">All Categories</option>
+              <option value="Marginal Farmer">Marginal Farmer (&lt; 2.5 Acres)</option>
+              <option value="Small Farmer">Small Farmer (2.5 - 5 Acres)</option>
+              <option value="Medium Farmer">Medium/Large Farmer (&gt; 5 Acres)</option>
+            </select>
+          </div>
+          <div class="filter-group-item">
+            <label for="filter-type">Scheme Type</label>
+            <select id="filter-type" class="input-form-sm" onchange="applyAllFilters()">
+              <option value="all">All Types</option>
+              <option value="subsidy">Direct Cash Subsidy</option>
+              <option value="insurance">Crop Insurance</option>
+              <option value="solar">Solar Systems</option>
+              <option value="equipment">Equipment Subsidy</option>
+              <option value="irrigation">Micro-Irrigation</option>
+              <option value="organic">Organic Farming</option>
+              <option value="seed">Seeds/Fertilizer</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Demographic & Farming Filters Toggle Pills -->
+        <div class="filter-toggles-row">
+          <label class="toggle-pill-checkbox">
+            <input type="checkbox" id="filter-organic" onchange="applyAllFilters()">
+            <span class="pill-label">🌾 Organic Farming</span>
+          </label>
+          <label class="toggle-pill-checkbox">
+            <input type="checkbox" id="filter-women" onchange="applyAllFilters()">
+            <span class="pill-label">👩 Women Farmers</span>
+          </label>
+          <label class="toggle-pill-checkbox">
+            <input type="checkbox" id="filter-young" onchange="applyAllFilters()">
+            <span class="pill-label">👦 Young Farmers</span>
+          </label>
+          <label class="toggle-pill-checkbox">
+            <input type="checkbox" id="filter-st" onchange="applyAllFilters()">
+            <span class="pill-label">🏹 Scheduled Tribe</span>
+          </label>
+          <label class="toggle-pill-checkbox">
+            <input type="checkbox" id="filter-sc" onchange="applyAllFilters()">
+            <span class="pill-label">🛠 Scheduled Caste</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Schemes Warning Banner (Offline support) -->
+      <div id="schemes-offline-banner" class="alert-yellow hidden">
+        <span class="warning-icon">⚠️</span>
+        <p id="schemes-offline-text">Internet offline. Showing cached schemes from <span id="schemes-cache-date">August 4, 2026</span>.</p>
       </div>
 
       <!-- Schemes Cards List -->
@@ -579,7 +678,7 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="prof-village" data-i18n="lbl_village">Village</label>
+              <label for="prof-village" data-i18n="lbl_village">Village (Optional)</label>
               <input type="text" id="prof-village" value="Kishanpur" class="input-form">
             </div>
             <div class="form-group">
@@ -589,8 +688,67 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="prof-acres" data-i18n="lbl_land">Land Size (Acres)</label>
+              <label for="prof-state" data-i18n="lbl_state">State</label>
+              <select id="prof-state" class="input-form">
+                <option value="Uttar Pradesh" selected>Uttar Pradesh</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Bihar">Bihar</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="prof-crops" data-i18n="lbl_active_crops">Crop Name</label>
+              <input type="text" id="prof-crops" value="Wheat" class="input-form">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prof-acres" data-i18n="lbl_land">Farm Size (Acres)</label>
               <input type="number" id="prof-acres" value="2.5" step="0.1" class="input-form">
+            </div>
+            <div class="form-group">
+              <label for="prof-category" data-i18n="lbl_category">Farmer Category</label>
+              <select id="prof-category" class="input-form">
+                <option value="Marginal Farmer">Marginal Farmer (&lt; 2.5 Acres)</option>
+                <option value="Small Farmer" selected>Small Farmer (2.5 - 5 Acres)</option>
+                <option value="Medium Farmer">Medium/Large Farmer (&gt; 5 Acres)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prof-irrigation" data-i18n="lbl_irrigation">Irrigation Type</label>
+              <select id="prof-irrigation" class="input-form">
+                <option value="Rainfed">Rainfed</option>
+                <option value="Borewell/Tubewell" selected>Borewell/Tubewell</option>
+                <option value="Canal">Canal</option>
+                <option value="Drip/Sprinkler">Drip/Sprinkler</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="prof-farming-type" data-i18n="lbl_farming_type">Farming Type</label>
+              <select id="prof-farming-type" class="input-form">
+                <option value="Conventional" selected>Conventional</option>
+                <option value="Organic">Organic</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prof-ownership" data-i18n="lbl_ownership">Land Ownership</label>
+              <select id="prof-ownership" class="input-form">
+                <option value="Owner" selected>Owner / Pattadar</option>
+                <option value="Tenant">Tenant Farmer</option>
+                <option value="Sharecropper">Sharecropper</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="prof-soil" data-i18n="lbl_soil_type">Soil Type</label>
@@ -601,10 +759,6 @@
                 <option value="Sandy">Sandy (रेतीली)</option>
               </select>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="prof-crops" data-i18n="lbl_active_crops">Active Crops Grown</label>
-            <input type="text" id="prof-crops" value="Rice, Wheat, Tomato" class="input-form">
           </div>
           <button type="submit" class="btn-primary btn-large btn-block font-semibold" data-i18n="save_profile">Save Profile Information</button>
         </form>
@@ -721,6 +875,8 @@
   <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/951/951-84.wav" preload="auto"></audio>
   <audio id="snd-chime" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
 
+  <script src="weatherService.js"></script>
+  <script src="weatherAIService.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

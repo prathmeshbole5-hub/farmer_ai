@@ -1,0 +1,203 @@
+[
+  {
+    "id": "pm-kisan",
+    "title": "PM Kisan Samman Nidhi",
+    "category": "subsidy",
+    "summary": "Direct income support of ₹6,000 per year in three equal installments to all landholding farmer families across India to help purchase inputs.",
+    "benefit": "₹6,000 / Year Cash Assistance (Direct Benefit Transfer)",
+    "source": "Ministry of Agriculture and Farmers Welfare",
+    "officialLink": "https://pmkisan.gov.in/",
+    "lastUpdated": "2026-08-01",
+    "deadline": null,
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner"],
+      "maxLandSizeAcres": null,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Land Record (Jamabandi/Khasra/RoR)",
+      "Bank Passbook linked with Aadhaar",
+      "Mobile Number linked with Aadhaar"
+    ],
+    "relatedSchemes": ["pm-fasal-bima", "soil-health-card", "pm-kusum"]
+  },
+  {
+    "id": "pm-fasal-bima",
+    "title": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "category": "insurance",
+    "summary": "Financial support and risk coverage for farmers suffering crop loss or damage due to natural calamities, pests, and diseases.",
+    "benefit": "Low Premium Crop Insurance (1.5% - 2% Premium for Rabi/Kharif crops)",
+    "source": "Ministry of Agriculture and Farmers Welfare",
+    "officialLink": "https://pmfby.gov.in/",
+    "lastUpdated": "2026-08-01",
+    "deadline": "2026-08-31",
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner", "Tenant", "Sharecropper"],
+      "maxLandSizeAcres": null,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Land records (RoR) or Tenancy Agreement",
+      "Sowing Certificate issued by Patwari/Gram Panchayat",
+      "Bank Account Details (with Cancelled Cheque)"
+    ],
+    "relatedSchemes": ["pm-kisan", "soil-health-card"]
+  },
+  {
+    "id": "pm-kusum",
+    "title": "PM KUSUM Yojana (Solar Pumps)",
+    "category": "solar",
+    "summary": "De-dieselization of the farm sector. Install clean solar water pumps with 60% combined subsidy from Central & State Governments.",
+    "benefit": "60% Subsidy on Solar Water Pump Installation",
+    "source": "Ministry of New and Renewable Energy",
+    "officialLink": "https://pmkusum.mnre.gov.in/",
+    "lastUpdated": "2026-08-03",
+    "deadline": "2026-09-30",
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner"],
+      "maxLandSizeAcres": 12.5,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": ["Borewell/Tubewell", "Canal"]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Land Ownership Certificate",
+      "Borewell/Water Source availability certificate",
+      "Electricity Bill (if grid-connected)",
+      "Bank Passbook",
+      "Passport Size Photo"
+    ],
+    "relatedSchemes": ["pm-kisan", "pmksy-pdmc"]
+  },
+  {
+    "id": "soil-health-card",
+    "title": "Soil Health Card Scheme",
+    "category": "seed",
+    "summary": "Provides soil testing services to help farmers understand the nutrient status of their soil and receive recommendations on fertilizer dosage.",
+    "benefit": "Free Soil Health Testing & Advisory Card",
+    "source": "Department of Agriculture and Farmers Welfare",
+    "officialLink": "https://soilhealth.dac.gov.in/",
+    "lastUpdated": "2026-07-28",
+    "deadline": null,
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner", "Tenant", "Sharecropper"],
+      "maxLandSizeAcres": null,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Soil sample collection details (Khasra No.)"
+    ],
+    "relatedSchemes": ["pm-kisan", "pkvy-organic"]
+  },
+  {
+    "id": "pkvy-organic",
+    "title": "Paramparagat Krishi Vikas Yojana (PKVY)",
+    "category": "organic",
+    "summary": "Supports organic farming in clusters. Financial assistance of ₹50,000 per hectare for 3 years is provided for organic inputs, certification, and packaging.",
+    "benefit": "₹50,000 / Hectare Subsidy for organic cultivation and certification",
+    "source": "Ministry of Agriculture & Farmers Welfare",
+    "officialLink": "https://pgsindia-ncof.gov.in/",
+    "lastUpdated": "2026-08-01",
+    "deadline": null,
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner", "Tenant"],
+      "maxLandSizeAcres": 10.0,
+      "requiredFarmingType": "organic",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Land records (RoR)",
+      "Cluster membership certificate",
+      "Bank details"
+    ],
+    "relatedSchemes": ["soil-health-card", "pmksy-pdmc"]
+  },
+  {
+    "id": "smam-equipment",
+    "title": "Sub-Mission on Agricultural Mechanization (SMAM)",
+    "category": "equipment",
+    "summary": "Assistance for procurement of modern agricultural machinery (tractors, tillers, harvesters, rotavators) to reduce labor costs and increase efficiency.",
+    "benefit": "40% to 50% Subsidy on Agricultural Equipment (up to 80% for SC/ST/Women/Small farmers)",
+    "source": "Department of Agriculture & Farmers Welfare",
+    "officialLink": "https://agrimachinery.nic.in/",
+    "lastUpdated": "2026-08-04",
+    "deadline": "2026-10-15",
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner", "Tenant"],
+      "maxLandSizeAcres": null,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Land Record details (Jamabandi/RoR)",
+      "Bank Passbook copy",
+      "Caste/Category Certificate (for higher SC/ST subsidy)",
+      "Tractor registration copy (if buying implements)"
+    ],
+    "relatedSchemes": ["pm-kisan", "pm-kusum"]
+  },
+  {
+    "id": "pmksy-pdmc",
+    "title": "Per Drop More Crop (PDMC - PMKSY)",
+    "category": "irrigation",
+    "summary": "Promotes micro-irrigation systems like drip and sprinkler setups to enhance water-use efficiency and crop productivity.",
+    "benefit": "45% to 55% Subsidy on Drip and Sprinkler Irrigation Systems",
+    "source": "Department of Agriculture, Cooperation & Farmers Welfare",
+    "officialLink": "https://pmksy.gov.in/",
+    "lastUpdated": "2026-07-30",
+    "deadline": null,
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner", "Tenant"],
+      "maxLandSizeAcres": 12.5,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": ["Drip/Sprinkler", "Borewell/Tubewell", "Canal"]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Land records (RoR)",
+      "Electricity bill / Pump connection proof",
+      "Borewell/Water source details",
+      "Bank details"
+    ],
+    "relatedSchemes": ["pm-kusum", "soil-health-card"]
+  },
+  {
+    "id": "rythu-bandhu",
+    "title": "Rythu Bandhu Scheme (Telangana)",
+    "category": "subsidy",
+    "summary": "Investment support scheme of the Telangana Government providing direct cash assistance to farmers for purchase of seeds, fertilizers, and pesticide inputs.",
+    "benefit": "₹10,000 / Acre / Year investment support in two crop seasons",
+    "source": "Telangana State Agriculture Department",
+    "officialLink": "http://rythubandhu.telangana.gov.in/",
+    "lastUpdated": "2026-08-01",
+    "deadline": null,
+    "eligibilityRules": {
+      "allowedStates": ["Telangana", "Andhra Pradesh"],
+      "requiredOwnership": ["Owner"],
+      "maxLandSizeAcres": null,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
+      "Pattadar Passbook (Telangana Land record)",
+      "Aadhaar Card",
+      "Bank Account details linked with Aadhaar"
+    ],
+    "relatedSchemes": ["pm-kisan", "pm-fasal-bima"]
+  }
+]

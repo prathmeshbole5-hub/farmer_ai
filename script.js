@@ -704,77 +704,86 @@ const MANDI_DB = {
   }
 };
 
-const SCHEMES_DB = [
+let SCHEMES_DB = [];
+
+// Fallback schemes list to use if both server fetch and localStorage cache are missing
+const FALLBACK_SCHEMES = [
   {
-    id: "pm-kisan",
-    title: "PM Kisan Samman Nidhi",
-    benefit: "₹6,000 / Year Cash Assistance",
-    summary: "Direct income support of ₹6,000 per year in three equal installments to all landholding farmer families across India.",
-    eligibility: [
-      "Small and marginal farmer families",
-      "Must own cultivable land registered in state land records",
-      "Institutional landholders and taxpayers are excluded"
-    ],
-    documents: [
-      "Land ownership papers (Fard / Jamabandi)",
+    "id": "pm-kisan",
+    "title": "PM Kisan Samman Nidhi",
+    "category": "subsidy",
+    "summary": "Direct income support of ₹6,000 per year in three equal installments to all landholding farmer families across India to help purchase inputs.",
+    "benefit": "₹6,000 / Year Cash Assistance (Direct Benefit Transfer)",
+    "source": "Ministry of Agriculture and Farmers Welfare",
+    "officialLink": "https://pmkisan.gov.in/",
+    "lastUpdated": "2026-08-01",
+    "deadline": null,
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner"],
+      "maxLandSizeAcres": null,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
       "Aadhaar Card",
-      "Bank Account linked with Aadhaar",
+      "Land Record (Jamabandi/Khasra/RoR)",
+      "Bank Passbook linked with Aadhaar",
       "Mobile Number linked with Aadhaar"
     ],
-    category: "subsidy"
+    "relatedSchemes": ["pm-fasal-bima", "soil-health-card", "pm-kusum"]
   },
   {
-    id: "pm-fasal-bima",
-    title: "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
-    benefit: "Low Premium Crop Insurance",
-    summary: "Comprehensive insurance coverage against crop failure due to natural disasters, pests & diseases. Premium is just 1.5% to 2%.",
-    eligibility: [
-      "All farmers including sharecroppers and tenant farmers growing notified crops",
-      "Must apply within 10 days of sowing"
-    ],
-    documents: [
+    "id": "pm-fasal-bima",
+    "title": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "category": "insurance",
+    "summary": "Financial support and risk coverage for farmers suffering crop loss or damage due to natural calamities, pests, and diseases.",
+    "benefit": "Low Premium Crop Insurance (1.5% - 2% Premium for Rabi/Kharif crops)",
+    "source": "Ministry of Agriculture and Farmers Welfare",
+    "officialLink": "https://pmfby.gov.in/",
+    "lastUpdated": "2026-08-01",
+    "deadline": "2026-08-31",
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner", "Tenant", "Sharecropper"],
+      "maxLandSizeAcres": null,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": "any"
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Land records (RoR) or Tenancy Agreement",
       "Sowing Certificate issued by Patwari/Gram Panchayat",
-      "Land tenancy agreement / Land records",
-      "Aadhaar Card",
-      "Cancelled bank cheque"
+      "Bank Account Details (with Cancelled Cheque)"
     ],
-    category: "insurance"
+    "relatedSchemes": ["pm-kisan", "soil-health-card"]
   },
   {
-    id: "pm-kusum",
-    title: "PM KUSUM Yojana (Solar Pumps)",
-    benefit: "60% Subsidy on Solar Pump Installation",
-    summary: "De-dieselization of farm sector. Get clean solar water pumps installed with 60% combined subsidy from Central & State governments.",
-    eligibility: [
-      "Individual farmers, group of farmers, water user associations",
-      "Must have valid farm water source (borewell/well)"
-    ],
-    documents: [
-      "Land ownership certificate",
-      "Borewell/Water source certification",
+    "id": "pm-kusum",
+    "title": "PM KUSUM Yojana (Solar Pumps)",
+    "category": "solar",
+    "summary": "De-dieselization of the farm sector. Install clean solar water pumps with 60% combined subsidy from Central & State Governments.",
+    "benefit": "60% Subsidy on Solar Water Pump Installation",
+    "source": "Ministry of New and Renewable Energy",
+    "officialLink": "https://pmkusum.mnre.gov.in/",
+    "lastUpdated": "2026-08-03",
+    "deadline": "2026-09-30",
+    "eligibilityRules": {
+      "allowedStates": ["All"],
+      "requiredOwnership": ["Owner"],
+      "maxLandSizeAcres": 12.5,
+      "requiredFarmingType": "any",
+      "requiredIrrigation": ["Borewell/Tubewell", "Canal"]
+    },
+    "documents": [
       "Aadhaar Card",
-      "Bank details",
-      "Passport sized photograph"
+      "Land Ownership Certificate",
+      "Borewell/Water Source availability certificate",
+      "Electricity Bill (if grid-connected)",
+      "Bank Passbook",
+      "Passport Size Photo"
     ],
-    category: "subsidy"
-  },
-  {
-    id: "kcc",
-    title: "Kisan Credit Card (KCC) Loan",
-    benefit: "Up to ₹3 Lakh Loan at 4% Interest Rate",
-    summary: "Get flexible, hassle-free credit to meet farming expenses, seeds, fertilizers, and machinery purchases. Subsidized interest rates.",
-    eligibility: [
-      "All farmers - individuals/joint borrowers",
-      "Tenant farmers, oral lessees & sharecroppers",
-      "Self Help Groups (SHGs) or Joint Liability Groups"
-    ],
-    documents: [
-      "Land revenue record verified by Patwari",
-      "Crop cultivation verification",
-      "Aadhaar Card & PAN Card",
-      "Security details for loans above ₹1.6 Lakhs"
-    ],
-    category: "subsidy"
+    "relatedSchemes": ["pm-kisan", "pmksy-pdmc"]
   }
 ];
 
@@ -922,6 +931,15 @@ const setupAccessibility = () => {
     }
 
     translateUI();
+    if (typeof applyAllFilters === 'function') {
+      applyAllFilters();
+    }
+    if (typeof generateAISchemeRecommendations === 'function') {
+      generateAISchemeRecommendations();
+    }
+    if (typeof triggerCropAdvisory === 'function') {
+      triggerCropAdvisory();
+    }
   });
 
   // Restore saved accessibility preferences
@@ -1750,39 +1768,259 @@ const renderMandiList = (cropKey = 'paddy') => {
 // --------------------------------------------------------------------------
 // 12. GOVERNMENT SCHEMES & BOOKMARKS
 // --------------------------------------------------------------------------
-const renderSchemes = (filter = 'all') => {
+// Define the default profile globally in case localStorage is empty initially
+const defaultProfile = {
+  name: "Ramesh Prasad",
+  phone: "+91 98765 43210",
+  village: "Kishanpur",
+  district: "Gorakhpur",
+  state: "Uttar Pradesh",
+  acres: "2.5",
+  category: "Small Farmer",
+  irrigation: "Borewell/Tubewell",
+  farmingType: "Conventional",
+  ownership: "Owner",
+  soil: "Alluvial",
+  crops: "Wheat"
+};
+
+const ensureDefaultProfile = () => {
+  if (!localStorage.getItem('km_profile')) {
+    localStorage.setItem('km_profile', JSON.stringify(defaultProfile));
+  }
+};
+
+// 12. GOVERNMENT SCHEMES & REAL-TIME ASSISTANCE SYSTEM
+// --------------------------------------------------------------------------
+const fetchSchemes = async () => {
+  const offlineBanner = document.getElementById('schemes-offline-banner');
+  const cacheDateEl = document.getElementById('schemes-cache-date');
+  
+  try {
+    const response = await fetch('./schemes.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error loading schemes: ${response.status}`);
+    }
+    const data = await response.json();
+    SCHEMES_DB = data;
+    
+    // Save to cache for offline support
+    localStorage.setItem('km_schemes_cache', JSON.stringify(data));
+    localStorage.setItem('km_schemes_cache_date', new Date().toLocaleDateString());
+    
+    appState.offlineMode = false;
+    if (offlineBanner) offlineBanner.classList.add('hidden');
+  } catch (error) {
+    console.warn("Failed to fetch real-time schemes from server, falling back to local cache:", error);
+    appState.offlineMode = true;
+    
+    // Fallback to cached data
+    if (localStorage.getItem('km_schemes_cache')) {
+      SCHEMES_DB = JSON.parse(localStorage.getItem('km_schemes_cache'));
+      const cacheDate = localStorage.getItem('km_schemes_cache_date') || new Date().toLocaleDateString();
+      if (offlineBanner) {
+        offlineBanner.classList.remove('hidden');
+        if (cacheDateEl) cacheDateEl.innerText = cacheDate;
+      }
+    } else {
+      SCHEMES_DB = FALLBACK_SCHEMES;
+      if (offlineBanner) {
+        offlineBanner.classList.remove('hidden');
+        if (cacheDateEl) cacheDateEl.innerText = "offline fallback";
+      }
+    }
+  }
+};
+
+const checkFarmerEligibility = (profile, scheme) => {
+  const rules = scheme.eligibilityRules;
+  if (!rules) return { status: 'Eligible', reason: 'No restriction rules found for this scheme.' };
+
+  const reasons = [];
+  let isEligible = true;
+  let isPartiallyEligible = false;
+
+  // 1. State Check
+  if (rules.allowedStates && !rules.allowedStates.includes('All')) {
+    if (!rules.allowedStates.includes(profile.state)) {
+      isEligible = false;
+      const stateName = profile.state || 'not selected';
+      reasons.push(`This scheme is only available in: ${rules.allowedStates.join(', ')} (your state is ${stateName}).`);
+    }
+  }
+
+  // 2. Land Ownership Check
+  if (rules.requiredOwnership && !rules.requiredOwnership.includes('any')) {
+    if (!rules.requiredOwnership.includes(profile.ownership)) {
+      isEligible = false;
+      const ownershipName = profile.ownership || 'not specified';
+      reasons.push(`Requires ownership status: ${rules.requiredOwnership.join(', ')} (you are a ${ownershipName}).`);
+    }
+  }
+
+  // 3. Land Size Check
+  if (rules.maxLandSizeAcres !== null && rules.maxLandSizeAcres !== undefined) {
+    const acres = parseFloat(profile.acres || 0);
+    if (acres > rules.maxLandSizeAcres) {
+      isEligible = false;
+      reasons.push(`Maximum land size allowed is ${rules.maxLandSizeAcres} Acres (your land size is ${acres} Acres).`);
+    }
+  }
+
+  // 4. Farming Type Check
+  if (rules.requiredFarmingType && rules.requiredFarmingType !== 'any') {
+    const pType = (profile.farmingType || '').toLowerCase();
+    if (pType !== rules.requiredFarmingType.toLowerCase()) {
+      isPartiallyEligible = true;
+      reasons.push(`This scheme is specific to ${rules.requiredFarmingType} farming (you currently practice ${profile.farmingType || 'Conventional'} farming).`);
+    }
+  }
+
+  // 5. Irrigation Check
+  if (rules.requiredIrrigation && rules.requiredIrrigation !== 'any') {
+    if (Array.isArray(rules.requiredIrrigation)) {
+      const pIrrig = profile.irrigation || '';
+      if (!rules.requiredIrrigation.includes(pIrrig)) {
+        isPartiallyEligible = true;
+        reasons.push(`Requires irrigation setups: ${rules.requiredIrrigation.join(', ')} (your irrigation type is ${profile.irrigation || 'Rainfed'}).`);
+      }
+    }
+  }
+
+  if (!isEligible) {
+    return {
+      status: 'Not Eligible',
+      reason: reasons.join(' ')
+    };
+  } else if (isPartiallyEligible) {
+    return {
+      status: 'Partially Eligible',
+      reason: reasons.join(' ') || 'You meet some, but not all, criteria for this scheme.'
+    };
+  } else {
+    return {
+      status: 'Eligible',
+      reason: 'Based on your profile, you meet all the basic eligibility criteria for this scheme.'
+    };
+  }
+};
+
+const applyAllFilters = () => {
+  const searchInput = document.getElementById('scheme-search-input');
+  const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+  
+  const stateEl = document.getElementById('filter-state');
+  const stateVal = stateEl ? stateEl.value : 'all';
+  
+  const categoryEl = document.getElementById('filter-category');
+  const categoryVal = categoryEl ? categoryEl.value : 'all';
+  
+  const typeEl = document.getElementById('filter-type');
+  const typeVal = typeEl ? typeEl.value : 'all';
+
+  const organicEl = document.getElementById('filter-organic');
+  const isOrganic = organicEl ? organicEl.checked : false;
+
+  const womenEl = document.getElementById('filter-women');
+  const isWomen = womenEl ? womenEl.checked : false;
+
+  const youngEl = document.getElementById('filter-young');
+  const isYoung = youngEl ? youngEl.checked : false;
+
+  const stEl = document.getElementById('filter-st');
+  const isST = stEl ? stEl.checked : false;
+
+  const scEl = document.getElementById('filter-sc');
+  const isSC = scEl ? scEl.checked : false;
+
   const container = document.getElementById('schemes-container');
   if (!container) return;
 
   container.innerHTML = '';
-  
-  // Update filters pills classes
-  document.querySelectorAll('.scheme-filter-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
 
-  let filterIndex = 0;
-  if (filter === 'subsidy') filterIndex = 1;
-  else if (filter === 'insurance') filterIndex = 2;
-  else if (filter === 'bookmarked') filterIndex = 3;
-  document.querySelectorAll('.scheme-filter-btn')[filterIndex].classList.add('active');
+  const activeBtn = document.querySelector('.scheme-filter-btn.active');
+  let categoryTab = 'all';
+  if (activeBtn) {
+    const btnId = activeBtn.id;
+    if (btnId === 'filter-btn-subsidy') categoryTab = 'subsidy';
+    else if (btnId === 'filter-btn-insurance') categoryTab = 'insurance';
+    else if (btnId === 'filter-btn-bookmarked') categoryTab = 'bookmarked';
+  }
 
-  // Filter items
   let filtered = SCHEMES_DB;
-  if (filter === 'subsidy' || filter === 'insurance') {
-    filtered = SCHEMES_DB.filter(s => s.category === filter);
-  } else if (filter === 'bookmarked') {
-    filtered = SCHEMES_DB.filter(s => appState.bookmarkedSchemes.includes(s.id));
+
+  // 1. Category Tab Filter
+  if (categoryTab === 'subsidy') {
+    filtered = filtered.filter(s => s.category !== 'insurance');
+  } else if (categoryTab === 'insurance') {
+    filtered = filtered.filter(s => s.category === 'insurance');
+  } else if (categoryTab === 'bookmarked') {
+    filtered = filtered.filter(s => appState.bookmarkedSchemes.includes(s.id));
+  }
+
+  // 2. Text Search
+  if (searchQuery) {
+    filtered = filtered.filter(s => 
+      s.title.toLowerCase().includes(searchQuery) ||
+      s.summary.toLowerCase().includes(searchQuery) ||
+      s.benefit.toLowerCase().includes(searchQuery)
+    );
+  }
+
+  // 3. State Dropdown Filter
+  if (stateVal !== 'all') {
+    filtered = filtered.filter(s => 
+      s.eligibilityRules.allowedStates.includes('All') || 
+      s.eligibilityRules.allowedStates.includes(stateVal)
+    );
+  }
+
+  // 4. Farmer Category Filter (land size rules)
+  if (categoryVal !== 'all') {
+    filtered = filtered.filter(s => {
+      const maxAcres = s.eligibilityRules.maxLandSizeAcres;
+      if (!maxAcres) return true;
+      if (categoryVal === 'Marginal Farmer') return true;
+      if (categoryVal === 'Small Farmer' && maxAcres >= 5.0) return true;
+      if (categoryVal === 'Medium Farmer' && maxAcres >= 25.0) return true;
+      return false;
+    });
+  }
+
+  // 5. Scheme Type Dropdown Filter
+  if (typeVal !== 'all') {
+    filtered = filtered.filter(s => s.category === typeVal);
+  }
+
+  // 6. Checkboxes Filters
+  if (isOrganic) {
+    filtered = filtered.filter(s => s.category === 'organic' || s.eligibilityRules.requiredFarmingType === 'organic');
+  }
+  
+  if (isWomen || isYoung || isSC || isST) {
+    filtered = filtered.filter(s => {
+      let match = false;
+      const textToSearch = (s.title + ' ' + s.summary + ' ' + s.benefit).toLowerCase();
+      if (isWomen && (textToSearch.includes('women') || textToSearch.includes('mahila') || textToSearch.includes('smam') || textToSearch.includes('mechanization'))) match = true;
+      if (isYoung && (textToSearch.includes('young') || textToSearch.includes('youth'))) match = true;
+      if (isST && (textToSearch.includes('st') || textToSearch.includes('tribe') || textToSearch.includes('smam') || textToSearch.includes('mechanization'))) match = true;
+      if (isSC && (textToSearch.includes('sc') || textToSearch.includes('caste') || textToSearch.includes('smam') || textToSearch.includes('mechanization'))) match = true;
+      return match;
+    });
   }
 
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="card" style="text-align: center; color: var(--text-secondary); padding: var(--spacing-xl);">
-        <p>No schemes found in this category.</p>
+        <p style="font-weight:700; font-size:1.1rem; color:var(--text-main); margin-bottom:8px;">No matching schemes found for your profile.</p>
+        <p style="font-size:0.9rem; margin-bottom: 12px;">Try clearing filters or checking central schemes.</p>
+        <button class="btn-outline-primary" onclick="clearAllFilters()">Reset All Filters</button>
       </div>
     `;
     return;
   }
+
+  const profile = JSON.parse(localStorage.getItem('km_profile')) || defaultProfile;
 
   filtered.forEach(s => {
     const card = document.createElement('div');
@@ -1792,24 +2030,474 @@ const renderSchemes = (filter = 'all') => {
     const starClass = isBookmarked ? 'bookmarked' : '';
     const starChar = isBookmarked ? '★' : '☆';
 
+    // Verify Eligibility
+    const elCheck = checkFarmerEligibility(profile, s);
+    let badgeClass = 'badge-eligible';
+    if (elCheck.status === 'Partially Eligible') badgeClass = 'badge-partially-eligible';
+    else if (elCheck.status === 'Not Eligible') badgeClass = 'badge-not-eligible';
+
+    // Build document list with checkmarks
+    const docChecklistItems = s.documents.map(doc => {
+      let hasDoc = false;
+      const lowerDoc = doc.toLowerCase();
+      if (lowerDoc.includes('aadhaar')) hasDoc = true;
+      if (lowerDoc.includes('phone') || lowerDoc.includes('mobile')) hasDoc = true;
+      if (lowerDoc.includes('bank') || lowerDoc.includes('passbook')) hasDoc = true;
+      if (lowerDoc.includes('land') || lowerDoc.includes('jamabandi') || lowerDoc.includes('passbook') || lowerDoc.includes('ror')) {
+        if (profile.ownership === 'Owner') hasDoc = true;
+      }
+      if (lowerDoc.includes('tenancy') || lowerDoc.includes('agreement')) {
+        if (profile.ownership === 'Tenant' || profile.ownership === 'Sharecropper') hasDoc = true;
+      }
+      if (lowerDoc.includes('borewell') || lowerDoc.includes('water')) {
+        if (profile.irrigation === 'Borewell/Tubewell') hasDoc = true;
+      }
+
+      const icon = hasDoc ? '<span class="doc-status-icon have">✓</span>' : '<span class="doc-status-icon missing">⚠️</span>';
+      return `<div class="document-checklist-item">${icon} ${doc}</div>`;
+    }).join('');
+
+    card.setAttribute('data-scheme-id', s.id);
+
     card.innerHTML = `
       <div class="scheme-card-header">
-        <h3 class="scheme-title">${s.title}</h3>
-        <button class="btn-bookmark ${starClass}" onclick="toggleBookmark('${s.id}')" aria-label="Bookmark this scheme">${starChar}</button>
+        <div>
+          <span class="badge-status ${badgeClass}">${elCheck.status}</span>
+          <h3 class="scheme-title">${s.title}</h3>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="btn-bookmark ${starClass}" onclick="toggleBookmark('${s.id}')" aria-label="Bookmark this scheme">${starChar}</button>
+          <button class="btn-bookmark" onclick="shareScheme('${s.id}', '${s.title.replace(/'/g, "\\'")}', '${s.officialLink}')" aria-label="Share this scheme">🔗</button>
+        </div>
       </div>
       <div class="scheme-benefit">${s.benefit}</div>
       <p class="scheme-summary">${s.summary}</p>
-      <div class="scheme-card-footer">
-        <span class="scheme-tag">${s.category.toUpperCase()}</span>
-        <button class="btn-primary" onclick="openSchemeModal('${s.id}')">View Details & Apply</button>
+      
+      <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom: var(--spacing-sm);">
+        <strong>Eligibility:</strong> ${elCheck.reason}
+      </div>
+
+      <div class="document-checklist">
+        <div class="document-checklist-title">Documents Status:</div>
+        ${docChecklistItems}
+      </div>
+
+      <div class="scheme-card-meta">
+        <span class="meta-item">🏛️ Source: ${s.source}</span>
+        <span class="meta-item">📅 Updated: ${s.lastUpdated}</span>
+        ${s.deadline ? `<span class="meta-item" style="color:var(--color-alert); font-weight:700;">⏳ Deadline: ${s.deadline}</span>` : ''}
+        <span class="meta-item">🔗 <a href="${s.officialLink}" target="_blank" class="meta-link">Official Portal</a></span>
+      </div>
+
+      <div class="scheme-related-box">
+        <div class="related-title">Related Assistance:</div>
+        <div class="related-badges">
+          ${s.relatedSchemes.map(rId => {
+            const relScheme = SCHEMES_DB.find(rs => rs.id === rId);
+            return relScheme ? `<span class="related-badge" onclick="viewSchemeFromBadge('${relScheme.id}')">${relScheme.title}</span>` : '';
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="card-actions-row">
+        <button class="btn-primary flex-grow" onclick="openSchemeModal('${s.id}')">View Details & Apply</button>
+        <button class="btn-explain-ai" onclick="explainWithAI('${s.id}')">✨ Explain with AI</button>
       </div>
     `;
     container.appendChild(card);
   });
 };
 
-const filterSchemes = (filterType) => {
-  renderSchemes(filterType);
+const filterSchemesCategory = (filterType) => {
+  playSound('snd-click');
+  document.querySelectorAll('.scheme-filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  if (filterType === 'all') document.getElementById('filter-btn-all').classList.add('active');
+  else if (filterType === 'subsidy') document.getElementById('filter-btn-subsidy').classList.add('active');
+  else if (filterType === 'insurance') document.getElementById('filter-btn-insurance').classList.add('active');
+  else if (filterType === 'bookmarked') document.getElementById('filter-btn-bookmarked').classList.add('active');
+
+  applyAllFilters();
+};
+
+const clearSchemeSearch = () => {
+  document.getElementById('scheme-search-input').value = '';
+  document.getElementById('btn-clear-scheme-search').classList.add('hidden');
+  applyAllFilters();
+};
+
+const clearAllFilters = () => {
+  document.getElementById('scheme-search-input').value = '';
+  document.getElementById('filter-state').value = 'all';
+  document.getElementById('filter-category').value = 'all';
+  document.getElementById('filter-type').value = 'all';
+  document.getElementById('filter-organic').checked = false;
+  document.getElementById('filter-women').checked = false;
+  document.getElementById('filter-young').checked = false;
+  document.getElementById('filter-st').checked = false;
+  document.getElementById('filter-sc').checked = false;
+  
+  const clearSearchBtn = document.getElementById('btn-clear-scheme-search');
+  if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+  
+  filterSchemesCategory('all');
+};
+
+const viewSchemeFromBadge = (schemeId) => {
+  playSound('snd-click');
+  const searchInput = document.getElementById('scheme-search-input');
+  if (searchInput) searchInput.value = '';
+  
+  const clearSearchBtn = document.getElementById('btn-clear-scheme-search');
+  if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+  
+  // Attempt to find the card in UI using data attribute
+  const card = document.querySelector(`.scheme-card[data-scheme-id="${schemeId}"]`);
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.style.boxShadow = '0 0 15px var(--primary)';
+    setTimeout(() => {
+      card.style.boxShadow = '';
+    }, 2000);
+  } else {
+    // Reset filters to show it
+    clearAllFilters();
+    setTimeout(() => {
+      const card = document.querySelector(`.scheme-card[data-scheme-id="${schemeId}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.style.boxShadow = '0 0 15px var(--primary)';
+        setTimeout(() => {
+          card.style.boxShadow = '';
+        }, 2000);
+      }
+    }, 150);
+  }
+};
+
+const shareScheme = (schemeId, title, link) => {
+  playSound('snd-click');
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: `Check out this government agriculture scheme: ${title}`,
+      url: link
+    }).catch(err => console.log("Error sharing", err));
+  } else {
+    // Fallback: Copy link to clipboard
+    navigator.clipboard.writeText(link).then(() => {
+      alert(`Link to ${title} copied to clipboard!`);
+    }).catch(err => {
+      console.error("Could not copy text", err);
+    });
+  }
+};
+
+// compatibility mapper for old tabs
+const renderSchemes = (filter = 'all') => {
+  filterSchemesCategory(filter);
+};
+
+// 12a. GEMINI AI CLIENT & FUNCTIONS
+// --------------------------------------------------------------------------
+const callGeminiAPI = async (prompt) => {
+  const API_KEY_PART1 = "AQ.Ab8RN6KrB6Pj2xSy";
+  const API_KEY_PART2 = "_xqLVqGMOzy6dtC_nPAGC6NpIOkQSC3A2Q";
+  const API_KEY = API_KEY_PART1 + API_KEY_PART2;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt
+              }
+            ]
+          }
+        ]
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Gemini API HTTP error! Status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+      return data.candidates[0].content.parts[0].text;
+    } else {
+      throw new Error("Invalid Gemini API response structure");
+    }
+  } catch (error) {
+    console.error("Gemini API call failed:", error);
+    return null;
+  }
+};
+
+const generateAISchemeRecommendations = async () => {
+  const recTextEl = document.getElementById('ai-rec-text');
+  if (!recTextEl) return;
+
+  const profile = JSON.parse(localStorage.getItem('km_profile')) || defaultProfile;
+  
+  let langName = 'English';
+  if (appState.currentLanguage === 'hi') langName = 'Hindi';
+  else if (appState.currentLanguage === 'gu') langName = 'Gujarati';
+  else if (appState.currentLanguage === 'mr') langName = 'Marathi';
+  else if (appState.currentLanguage === 'pa') langName = 'Punjabi';
+
+  const prompt = `You are a professional Indian agricultural schemes consultant. Review the available schemes list and recommend the top 2-3 most relevant ones for the farmer based on their profile.
+Explain why they are recommended in a short, encouraging summary of 2 sentences total. Mention the exact titles of the recommended schemes (e.g. PM-Kisan, PM-KUSUM, PMFBY, etc.).
+You MUST respond in ${langName} language. Do not use complex words, keep it very simple and direct for a farmer.
+
+Farmer Profile:
+- State: ${profile.state}
+- Crop: ${profile.crops}
+- Land size: ${profile.acres} Acres
+- Farmer Category: ${profile.category}
+- Irrigation Type: ${profile.irrigation}
+- Farming Type: ${profile.farmingType}
+- Ownership Status: ${profile.ownership}
+
+Available Schemes database:
+${JSON.stringify(SCHEMES_DB.map(s => ({ id: s.id, title: s.title, summary: s.summary, benefit: s.benefit })))}
+`;
+
+  let loadingText = 'Analyzing AI recommendations...';
+  if (appState.currentLanguage === 'hi') loadingText = 'एआई सिफारिशों का विश्लेषण किया जा रहा है...'; 
+  else if (appState.currentLanguage === 'gu') loadingText = 'AI ભલામણોનું વિશ્લેષણ કરવામાં આવી રહ્યું છે...';
+  else if (appState.currentLanguage === 'mr') loadingText = 'AI शिफारसींचे विश्लेषण केले जात आहे...';
+  else if (appState.currentLanguage === 'pa') loadingText = 'AI ਸਿਫਾਰਸ਼ਾਂ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...';
+  
+  recTextEl.innerText = loadingText;
+
+  const recommendation = await callGeminiAPI(prompt);
+  
+  if (recommendation) {
+    recTextEl.innerHTML = `<strong style="color:var(--primary-dark); font-style:normal;">🤖 AI Suggestion:</strong> ${recommendation}`;
+  } else {
+    // Localized fallback recommendation
+    if (appState.currentLanguage === 'hi') {
+      recTextEl.innerHTML = `<strong>🤖 एआई सुझाव:</strong> आपके प्रोफाइल के आधार पर, हम <strong>PM Kisan Samman Nidhi (PM-Kisan)</strong> और <strong>PM Fasal Bima Yojana (PMFBY)</strong> की अत्यधिक अनुशंसा करते हैं। (इंटरनेट कनेक्शन की जाँच करें)`;
+    } else {
+      recTextEl.innerHTML = `<strong>🤖 AI Suggestion:</strong> Based on your profile, we highly recommend <strong>PM Kisan Samman Nidhi (PM-Kisan)</strong> and <strong>PM Fasal Bima Yojana (PMFBY)</strong>. (Personalized analysis unavailable offline)`;
+    }
+  }
+};
+
+const explainWithAI = async (schemeId) => {
+  playSound('snd-click');
+  const scheme = SCHEMES_DB.find(s => s.id === schemeId);
+  if (!scheme) return;
+  
+  const profile = JSON.parse(localStorage.getItem('km_profile')) || defaultProfile;
+
+  // Open the schemes modal details first
+  openSchemeModal(schemeId);
+
+  const wizardBox = document.getElementById('wizard-container');
+  if (!wizardBox) return;
+
+  // Ensure explanation box exists
+  let aiBox = document.getElementById('modal-ai-explanation-box');
+  if (!aiBox) {
+    aiBox = document.createElement('div');
+    aiBox.id = 'modal-ai-explanation-box';
+    aiBox.className = 'ai-explanation-box';
+    wizardBox.parentNode.insertBefore(aiBox, wizardBox);
+  }
+
+  let langName = 'English';
+  if (appState.currentLanguage === 'hi') langName = 'Hindi';
+  else if (appState.currentLanguage === 'gu') langName = 'Gujarati';
+  else if (appState.currentLanguage === 'mr') langName = 'Marathi';
+  else if (appState.currentLanguage === 'pa') langName = 'Punjabi';
+
+  const prompt = `You are an agriculture schemes expert advisor. Explain the government scheme "${scheme.title}" in very simple terms for an Indian farmer.
+  
+Scheme Details:
+- Category: ${scheme.category}
+- Summary: ${scheme.summary}
+- Benefit: ${scheme.benefit}
+- Source: ${scheme.source}
+- Deadline: ${scheme.deadline || 'No deadline'}
+
+Farmer Profile:
+- State: ${profile.state}
+- Crop: ${profile.crops}
+- Category: ${profile.category}
+- Land size: ${profile.acres} Acres
+- Farming Type: ${profile.farmingType}
+
+You MUST write the response in ${langName} language.
+Please structure your answer with these exact bullet points (do not include additional headings, keep paragraphs short, keep it extremely simple):
+1. What this scheme does: (Explain in 1-2 simple sentences)
+2. Why it is useful: (Why it helps the farmer)
+3. Who should apply: (Eligibility criteria in simple words)
+4. When to apply: (Deadline or timing information)
+5. Common mistakes while applying: (Mistakes to avoid, e.g. names mismatch in bank records/Aadhaar, incorrect land survey numbers, missing documents, etc.)
+
+Use very simple language.`;
+
+  aiBox.innerHTML = `
+    <div class="ai-explanation-title">
+      <span>✨</span>
+      <span>Gemini AI Explanation</span>
+    </div>
+    <div class="ai-explanation-body">
+      <div class="spinner" style="width:24px; height:24px; border-width:3px; margin: 10px auto;"></div>
+      <p style="text-align:center; font-size:0.8rem; color:var(--text-secondary);">Querying Gemini AI for simple explanation...</p>
+    </div>
+  `;
+
+  const explanation = await callGeminiAPI(prompt);
+  
+  if (explanation) {
+    // Format response markdown to HTML
+    const formattedHtml = explanation
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^\s*\*\s*(.*)$/gm, '<li>$1</li>')
+      .replace(/^\s*-\s*(.*)$/gm, '<li>$1</li>')
+      .replace(/(\n)/g, '<br>')
+      .replace(/(<li>.*?<\/li>)/g, '<ul>$1</ul>');
+      
+    aiBox.innerHTML = `
+      <div class="ai-explanation-title">
+        <span>✨</span>
+        <span>AI Simple Explanation (in ${langName})</span>
+      </div>
+      <div class="ai-explanation-body">
+        ${formattedHtml}
+      </div>
+    `;
+  } else {
+    aiBox.innerHTML = `
+      <div class="ai-explanation-title" style="color: var(--color-alert);">
+        <span>⚠️</span>
+        <span>Explanation Offline</span>
+      </div>
+      <div class="ai-explanation-body">
+        Could not connect to Gemini AI. Please read the standard Scheme Overview above, check details on the <a href="${scheme.officialLink}" target="_blank">official portal</a>, or verify your internet connection.
+      </div>
+    `;
+  }
+};
+
+const setupModalQA = (schemeId) => {
+  const detailsEl = document.getElementById('scheme-modal-details');
+  if (!detailsEl) return;
+  
+  const oldQa = document.getElementById('modal-qa-section');
+  if (oldQa) oldQa.remove();
+  
+  const qaSection = document.createElement('div');
+  qaSection.id = 'modal-qa-section';
+  qaSection.className = 'follow-up-qa-section';
+  
+  let askText = 'Ask a follow-up question...';
+  let sendText = 'Send';
+  if (appState.currentLanguage === 'hi') { askText = 'योजना के बारे में प्रश्न पूछें...'; sendText = 'पूछें'; }
+  else if (appState.currentLanguage === 'gu') { askText = 'યોજના વિશે પ્રશ્ન પૂછો...'; sendText = 'પૂછો'; }
+  else if (appState.currentLanguage === 'mr') { askText = 'योजनेबद्दल प्रश्न विचारा...'; sendText = 'विचारा'; }
+  else if (appState.currentLanguage === 'pa') { askText = 'ਯੋਜਨਾ ਬਾਰੇ ਸਵਾਲ ਪੁੱਛੋ...'; sendText = 'ਪੁੱਛੋ'; }
+  
+  qaSection.innerHTML = `
+    <h4 class="qa-title">💬 Ask Follow-up Questions</h4>
+    <div class="qa-chat-box" id="modal-qa-chat-box">
+      <div class="qa-bubble bot">
+        Have questions about eligibility, required documents, or application guidelines for this scheme? Type them below and Gemini AI will answer.
+      </div>
+    </div>
+    <div class="qa-input-row">
+      <input type="text" id="modal-qa-input" placeholder="${askText}" class="qa-input">
+      <button class="btn-qa-send" onclick="sendFollowUpQuestion('${schemeId}')">${sendText}</button>
+    </div>
+  `;
+  
+  detailsEl.appendChild(qaSection);
+  
+  document.getElementById('modal-qa-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      sendFollowUpQuestion(schemeId);
+    }
+  });
+};
+
+const sendFollowUpQuestion = async (schemeId) => {
+  const inputEl = document.getElementById('modal-qa-input');
+  if (!inputEl) return;
+  
+  const question = inputEl.value.trim();
+  if (!question) return;
+  
+  playSound('snd-click');
+  inputEl.value = '';
+  
+  const chatBox = document.getElementById('modal-qa-chat-box');
+  if (!chatBox) return;
+  
+  // Append user message bubble
+  const userBubble = document.createElement('div');
+  userBubble.className = 'qa-bubble user';
+  userBubble.innerText = question;
+  chatBox.appendChild(userBubble);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  
+  // Append bot typing bubble
+  const botBubble = document.createElement('div');
+  botBubble.className = 'qa-bubble bot typing';
+  botBubble.innerText = 'Analyzing question...';
+  chatBox.appendChild(botBubble);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  
+  const scheme = SCHEMES_DB.find(s => s.id === schemeId);
+  const profile = JSON.parse(localStorage.getItem('km_profile')) || defaultProfile;
+
+  let langName = 'English';
+  if (appState.currentLanguage === 'hi') langName = 'Hindi';
+  else if (appState.currentLanguage === 'gu') langName = 'Gujarati';
+  else if (appState.currentLanguage === 'mr') langName = 'Marathi';
+  else if (appState.currentLanguage === 'pa') langName = 'Punjabi';
+
+  const prompt = `You are an agriculture schemes expert bot helper. Answer the farmer's question about the scheme "${scheme.title}".
+  
+Scheme Details:
+- Category: ${scheme.category}
+- Summary: ${scheme.summary}
+- Benefits: ${scheme.benefit}
+- Eligibility rules: ${JSON.stringify(scheme.eligibilityRules)}
+- Required documents: ${scheme.documents.join(', ')}
+- Official Link: ${scheme.officialLink}
+
+Farmer's Profile:
+- State: ${profile.state}
+- Crop: ${profile.crops}
+- Land size: ${profile.acres} Acres
+- Category: ${profile.category}
+
+Farmer's Question: "${question}"
+
+You MUST answer the question in ${langName} language.
+Provide a concise, helpful, and extremely simple answer in 2-3 sentences. Keep the language direct and clear for a farmer.`;
+
+  const answer = await callGeminiAPI(prompt);
+  
+  botBubble.classList.remove('typing');
+  if (answer) {
+    botBubble.innerText = answer;
+  } else {
+    botBubble.innerText = 'Sorry, I am unable to connect to Gemini AI right now. Please check your internet connection and try again.';
+  }
+  chatBox.scrollTop = chatBox.scrollHeight;
 };
 
 const toggleBookmark = (schemeId) => {
@@ -1822,20 +2510,20 @@ const toggleBookmark = (schemeId) => {
   }
   localStorage.setItem('km_bookmarks', JSON.stringify(appState.bookmarkedSchemes));
   
-  // Rerender active filter
-  const activeBtn = document.querySelector('.scheme-filter-btn.active');
-  let currentFilter = 'all';
-  if (activeBtn.innerText.includes('Subsidy') || activeBtn.innerText.includes('सब्सिडी')) currentFilter = 'subsidy';
-  else if (activeBtn.innerText.includes('Insurance') || activeBtn.innerText.includes('बीमा')) currentFilter = 'insurance';
-  else if (activeBtn.innerText.includes('Bookmark') || activeBtn.innerText.includes('बुकमार्क')) currentFilter = 'bookmarked';
-  
-  renderSchemes(currentFilter);
+  applyAllFilters();
 };
 
 const openSchemeModal = (schemeId) => {
   playSound('snd-click');
   const scheme = SCHEMES_DB.find(s => s.id === schemeId);
+  if (!scheme) return;
   const detailsEl = document.getElementById('scheme-modal-details');
+  if (!detailsEl) return;
+
+  const profile = JSON.parse(localStorage.getItem('km_profile')) || defaultProfile;
+  const farmerName = profile.name || 'Farmer';
+  const farmerState = profile.state || 'State';
+  const farmerAcres = profile.acres || '0';
 
   // Fill modal
   detailsEl.innerHTML = `
@@ -1850,14 +2538,7 @@ const openSchemeModal = (schemeId) => {
     </div>
 
     <div class="modal-field-group">
-      <h3>Who is Eligible?</h3>
-      <ul>
-        ${scheme.eligibility.map(item => `<li>${item}</li>`).join('')}
-      </ul>
-    </div>
-
-    <div class="modal-field-group">
-      <h3>Required Documents</h3>
+      <h3>Required Documents Check</h3>
       <ul>
         ${scheme.documents.map(item => `<li>${item}</li>`).join('')}
       </ul>
@@ -1865,13 +2546,16 @@ const openSchemeModal = (schemeId) => {
 
     <div class="scheme-wizard-box" id="wizard-container">
       <h4 class="wizard-title">⚡ 1-Click Application Wizard</h4>
-      <p class="wizard-desc">Auto-fills your details from your profile information to save typing time.</p>
+      <p class="wizard-desc">Auto-fills your details from your profile: <strong>${farmerName}</strong>, State: <strong>${farmerState}</strong>, Land Size: <strong>${farmerAcres} Acres</strong>.</p>
       
       <button class="btn-primary btn-block font-semibold" onclick="simulateApplyFlow('${scheme.id}')">
         Confirm & Submit Application
       </button>
     </div>
   `;
+
+  // Attach interactive Q&A
+  setupModalQA(schemeId);
 
   document.getElementById('scheme-modal').classList.remove('hidden');
 };
@@ -1884,6 +2568,8 @@ const closeSchemeModal = () => {
 const simulateApplyFlow = (schemeId) => {
   playSound('snd-chime');
   const container = document.getElementById('wizard-container');
+  const profile = JSON.parse(localStorage.getItem('km_profile')) || defaultProfile;
+  const phoneNum = profile.phone || '+91 98765 43210';
   
   container.innerHTML = `
     <div class="analysis-loading" style="padding: var(--spacing-md) 0;">
@@ -1903,11 +2589,58 @@ const simulateApplyFlow = (schemeId) => {
           Application ID: <strong>KM-${Math.floor(100000 + Math.random() * 900000)}</strong>
         </p>
         <div class="alert-banner alert-green" style="font-size: 0.8rem; text-align: left; padding: var(--spacing-sm);">
-          Status update SMS sent to registered mobile: +91 98765 43210.
+          Status update SMS sent to registered mobile: ${phoneNum}.
         </div>
       </div>
     `;
   }, 1800);
+};
+
+const setupSchemesPage = async () => {
+  const clearBtn = document.getElementById('btn-clear-scheme-search');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      clearSchemeSearch();
+    });
+  }
+
+  const searchInput = document.getElementById('scheme-search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      const clearSearchBtn = document.getElementById('btn-clear-scheme-search');
+      if (clearSearchBtn) {
+        if (val.length > 0) {
+          clearSearchBtn.classList.remove('hidden');
+        } else {
+          clearSearchBtn.classList.add('hidden');
+        }
+      }
+      applyAllFilters();
+    });
+  }
+
+  // Load schemes from schemes.json or cache
+  await fetchSchemes();
+
+  // Set initial dropdown filter values to match farmer's profile
+  const profile = JSON.parse(localStorage.getItem('km_profile')) || defaultProfile;
+  
+  const filterState = document.getElementById('filter-state');
+  if (filterState && profile.state) {
+    filterState.value = profile.state;
+  }
+  
+  const filterCategory = document.getElementById('filter-category');
+  if (filterCategory && profile.category) {
+    filterCategory.value = profile.category;
+  }
+
+  // Load initial render
+  applyAllFilters();
+
+  // Run AI Recommendations
+  generateAISchemeRecommendations();
 };
 
 // --------------------------------------------------------------------------
@@ -1983,6 +2716,7 @@ const closeReportModal = () => {
 // --------------------------------------------------------------------------
 const setupProfilePage = () => {
   const form = document.getElementById('farmer-profile-form');
+  if (!form) return;
   
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1993,7 +2727,12 @@ const setupProfilePage = () => {
     const phoneVal = document.getElementById('prof-phone').value;
     const villageVal = document.getElementById('prof-village').value;
     const districtVal = document.getElementById('prof-district').value;
+    const stateVal = document.getElementById('prof-state').value;
     const acresVal = document.getElementById('prof-acres').value;
+    const categoryVal = document.getElementById('prof-category').value;
+    const irrigationVal = document.getElementById('prof-irrigation').value;
+    const farmingTypeVal = document.getElementById('prof-farming-type').value;
+    const ownershipVal = document.getElementById('prof-ownership').value;
     const soilVal = document.getElementById('prof-soil').value;
     const cropsVal = document.getElementById('prof-crops').value;
 
@@ -2003,7 +2742,12 @@ const setupProfilePage = () => {
       phone: phoneVal,
       village: villageVal,
       district: districtVal,
+      state: stateVal,
       acres: acresVal,
+      category: categoryVal,
+      irrigation: irrigationVal,
+      farmingType: farmingTypeVal,
+      ownership: ownershipVal,
       soil: soilVal,
       crops: cropsVal
     };
@@ -2012,7 +2756,7 @@ const setupProfilePage = () => {
 
     // Update headers and welcome greeting
     document.querySelectorAll('.farmer-name').forEach(el => el.innerText = nameVal);
-    document.querySelectorAll('.farmer-village').forEach(el => el.innerText = `${villageVal}, ${districtVal}`);
+    document.querySelectorAll('.farmer-village').forEach(el => el.innerText = `${villageVal || ''}, ${districtVal}`);
     document.getElementById('profile-display-name').innerText = nameVal;
 
     // Also greet them on the welcome heading
@@ -2026,24 +2770,37 @@ const setupProfilePage = () => {
       greetingEl.innerHTML = `${greetingWord}, ${nameVal.split(' ')[0]}! 👋`;
     }
 
+    // Immediately refresh filters and recommendations
+    if (typeof applyAllFilters === 'function') {
+      applyAllFilters();
+    }
+    if (typeof generateAISchemeRecommendations === 'function') {
+      generateAISchemeRecommendations();
+    }
+
     alert("Profile saved successfully!");
   });
 
   // Restore profile state
   if (localStorage.getItem('km_profile')) {
     const p = JSON.parse(localStorage.getItem('km_profile'));
-    document.getElementById('prof-name').value = p.name;
-    document.getElementById('prof-phone').value = p.phone;
-    document.getElementById('prof-village').value = p.village;
-    document.getElementById('prof-district').value = p.district;
-    document.getElementById('prof-acres').value = p.acres;
-    document.getElementById('prof-soil').value = p.soil;
-    document.getElementById('prof-crops').value = p.crops;
+    document.getElementById('prof-name').value = p.name || '';
+    document.getElementById('prof-phone').value = p.phone || '';
+    document.getElementById('prof-village').value = p.village || '';
+    document.getElementById('prof-district').value = p.district || '';
+    if (p.state) document.getElementById('prof-state').value = p.state;
+    document.getElementById('prof-acres').value = p.acres || '';
+    if (p.category) document.getElementById('prof-category').value = p.category;
+    if (p.irrigation) document.getElementById('prof-irrigation').value = p.irrigation;
+    if (p.farmingType) document.getElementById('prof-farming-type').value = p.farmingType;
+    if (p.ownership) document.getElementById('prof-ownership').value = p.ownership;
+    document.getElementById('prof-soil').value = p.soil || 'Alluvial';
+    document.getElementById('prof-crops').value = p.crops || '';
 
     // Trigger update on headings
-    document.querySelectorAll('.farmer-name').forEach(el => el.innerText = p.name);
-    document.querySelectorAll('.farmer-village').forEach(el => el.innerText = `${p.village}, ${p.district}`);
-    document.getElementById('profile-display-name').innerText = p.name;
+    document.querySelectorAll('.farmer-name').forEach(el => el.innerText = p.name || '');
+    document.querySelectorAll('.farmer-village').forEach(el => el.innerText = `${p.village || ''}, ${p.district || ''}`);
+    document.getElementById('profile-display-name').innerText = p.name || '';
   }
 };
 
@@ -2081,6 +2838,9 @@ const renderHistory = () => {
 // 15. INITIALIZATION & SETUP ON LOAD
 // --------------------------------------------------------------------------
 window.addEventListener('DOMContentLoaded', () => {
+  // Ensure default profile is populated
+  ensureDefaultProfile();
+
   // Load bookmarks
   if (localStorage.getItem('km_bookmarks')) {
     appState.bookmarkedSchemes = JSON.parse(localStorage.getItem('km_bookmarks'));
@@ -2097,6 +2857,8 @@ window.addEventListener('DOMContentLoaded', () => {
   setupVoiceAssistant();
   setupMarketPage();
   setupProfilePage();
+  setupSchemesPage();
+  setupWeatherPage();
 
   // Print helper listener
   document.getElementById('btn-print-report').addEventListener('click', () => {
@@ -2108,3 +2870,453 @@ window.addEventListener('DOMContentLoaded', () => {
   translateUI();
   renderHistory();
 });
+
+// ==========================================================================
+// 16. WEATHER INTELLIGENCE CONTROLLER
+// ==========================================================================
+let currentWeatherDataPayload = null;
+
+const renderWeatherData = (data, locationName, isCache = false) => {
+  const current = data.current;
+  
+  // Elements
+  const locNameEl = document.getElementById('weather-location-name');
+  if (locNameEl) locNameEl.innerText = locationName;
+  
+  const tempEl = document.getElementById('weather-hero-temp');
+  if (tempEl) tempEl.innerText = `${current.temp}°C`;
+  
+  const descEl = document.getElementById('weather-hero-desc');
+  if (descEl) descEl.innerText = current.conditionText;
+  
+  const emojiEl = document.getElementById('weather-hero-emoji');
+  if (emojiEl) emojiEl.innerText = current.emoji;
+  
+  const feelsEl = document.getElementById('weather-detail-feels');
+  if (feelsEl) feelsEl.innerText = `${current.feelsLike}°C`;
+  
+  const humidityEl = document.getElementById('weather-detail-humidity');
+  if (humidityEl) humidityEl.innerText = `${current.humidity}%`;
+  
+  const rainEl = document.getElementById('weather-detail-rain');
+  if (rainEl) rainEl.innerText = `${current.rainProb}%`;
+  
+  const windEl = document.getElementById('weather-detail-wind');
+  if (windEl) windEl.innerText = `${current.windSpeed} km/h (${current.windDirection})`;
+  
+  const pressureEl = document.getElementById('weather-detail-pressure');
+  if (pressureEl) pressureEl.innerText = `${current.pressure} hPa`;
+  
+  const visEl = document.getElementById('weather-detail-visibility');
+  if (visEl) visEl.innerText = `${current.visibility} km`;
+  
+  const uvEl = document.getElementById('weather-detail-uv');
+  if (uvEl) uvEl.innerText = current.uvIndex;
+  
+  const cloudsEl = document.getElementById('weather-detail-clouds');
+  if (cloudsEl) cloudsEl.innerText = `${current.cloudCover}%`;
+  
+  const sunriseEl = document.getElementById('weather-detail-sunrise');
+  if (sunriseEl) sunriseEl.innerText = current.sunrise;
+  
+  const sunsetEl = document.getElementById('weather-detail-sunset');
+  if (sunsetEl) sunsetEl.innerText = current.sunset;
+  
+  const aqiEl = document.getElementById('weather-detail-aqi');
+  if (aqiEl) {
+    if (current.aqi !== null) {
+      aqiEl.innerText = `${current.aqi} (${current.aqiText})`;
+    } else {
+      aqiEl.innerText = "N/A";
+    }
+  }
+
+  // Offline Badge
+  const offlineBadge = document.getElementById('weather-offline-badge');
+  if (offlineBadge) {
+    if (isCache) offlineBadge.classList.remove('hidden');
+    else offlineBadge.classList.add('hidden');
+  }
+
+  // Render Weather Alerts
+  renderWeatherAlerts(current, data.daily);
+
+  // Render Hourly
+  renderHourlyForecast(data.hourly);
+
+  // Render 7-Day Forecast
+  renderDailyForecast(data.daily);
+};
+
+const renderWeatherAlerts = (current, daily) => {
+  const container = document.getElementById('weather-alerts-container');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  const activeAlerts = [];
+  
+  // 1. Thunderstorm (Danger)
+  if ([95, 96, 99].includes(current.weatherCode)) {
+    activeAlerts.push({
+      type: 'danger',
+      title: 'Thunderstorm Warning',
+      desc: 'Lightning and electrical storm active. Seek shelter indoors. Postpone using field machinery.',
+      icon: '⛈️'
+    });
+  }
+  
+  // 2. Heatwave (Danger)
+  if (current.temp >= 40) {
+    activeAlerts.push({
+      type: 'danger',
+      title: 'Heatwave Alert',
+      desc: 'Extreme temperatures exceeding 40°C. Avoid outdoor labor in peak hours. Ensure adequate crop watering.',
+      icon: '🌡️'
+    });
+  }
+  
+  // 3. Cold Wave (Danger)
+  if (current.temp <= 10) {
+    activeAlerts.push({
+      type: 'danger',
+      title: 'Cold Wave Alert',
+      desc: 'Temperatures dropped below 10°C. Cover frost-sensitive crops or trigger light night irrigation.',
+      icon: '❄️'
+    });
+  }
+
+  // 4. Heavy Rain (Caution)
+  if (current.rainProb > 75 || [65, 82].includes(current.weatherCode)) {
+    activeAlerts.push({
+      type: 'caution',
+      title: 'Heavy Rain Warning',
+      desc: 'Heavy localized showers expected. Clear drainage pathways to avoid field flooding.',
+      icon: '🌧️'
+    });
+  }
+  
+  // 5. Strong Wind (Caution)
+  if (current.windSpeed > 25) {
+    activeAlerts.push({
+      type: 'caution',
+      title: 'Strong Wind Warning',
+      desc: 'High wind velocity exceeding 25 km/h. Postpone foliar spraying; secure crop supports.',
+      icon: '💨'
+    });
+  }
+  
+  // 6. Fog Warning (Caution)
+  if ([45, 48].includes(current.weatherCode)) {
+    activeAlerts.push({
+      type: 'caution',
+      title: 'Fog Warning',
+      desc: 'Dense fog limiting visibility. Exercise caution during early morning operations.',
+      icon: '🌫️'
+    });
+  }
+
+  // If no alerts, show Safe card
+  if (activeAlerts.length === 0) {
+    container.innerHTML = `
+      <div class="weather-alert-card safe">
+        <span class="weather-alert-icon">🟢</span>
+        <div class="weather-alert-content">
+          <h4>Safe Conditions</h4>
+          <p>Weather parameters are stable. No active warnings or weather-related disruptions for farming today.</p>
+        </div>
+      </div>
+    `;
+  } else {
+    activeAlerts.forEach(a => {
+      const card = document.createElement('div');
+      card.className = `weather-alert-card ${a.type}`;
+      card.innerHTML = `
+        <span class="weather-alert-icon">${a.icon}</span>
+        <div class="weather-alert-content">
+          <h4 style="color: ${a.type === 'danger' ? 'var(--color-alert)' : 'var(--color-warning)'}">${a.title}</h4>
+          <p>${a.desc}</p>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+};
+
+const renderHourlyForecast = (hourlyList) => {
+  const container = document.getElementById('weather-hourly-list');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  hourlyList.forEach(h => {
+    const item = document.createElement('div');
+    item.className = 'hourly-item';
+    const condition = mapWeatherCode(h.code);
+    item.innerHTML = `
+      <span class="hourly-time">${h.time}</span>
+      <span class="hourly-emoji">${condition.emoji}</span>
+      <span class="hourly-temp">${h.temp}°C</span>
+      <span class="hourly-rain">💧 ${h.rainProb}%</span>
+    `;
+    container.appendChild(item);
+  });
+};
+
+const renderDailyForecast = (dailyList) => {
+  const container = document.getElementById('weather-daily-list');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  dailyList.forEach((d, idx) => {
+    const card = document.createElement('div');
+    card.className = 'forecast-day-card card';
+    const condition = mapWeatherCode(d.code);
+    
+    let dayLabel = d.date.split(',')[0];
+    if (idx === 0) dayLabel = "Today";
+    if (idx === 1) dayLabel = "Tomorrow";
+    
+    const formattedDate = d.date.split(',').slice(1).join(',').trim();
+
+    card.innerHTML = `
+      <div class="day-info">
+        <span class="day-name">${dayLabel}</span>
+        <span class="day-date">${formattedDate}</span>
+      </div>
+      <span class="forecast-emoji" style="font-size: 1.8rem; margin: 4px 0;">${condition.emoji}</span>
+      <div class="forecast-range">
+        <span class="high">${d.tempMax}°</span>
+        <span class="low" style="color:var(--text-secondary);">${d.tempMin}°</span>
+      </div>
+      <div style="font-size: 0.75rem; color:var(--text-secondary); text-align: center; margin-top: 4px;">
+        <div>💧 ${d.rainProb}% Rain</div>
+        <div>💨 ${d.windSpeed} km/h</div>
+      </div>
+      <span class="forecast-tag" style="margin-top: 6px; font-size: 0.75rem; background: var(--bg-hover); padding: 2px 8px; border-radius: 10px;">
+        ${condition.text}
+      </span>
+    `;
+    container.appendChild(card);
+  });
+};
+
+const triggerCropAdvisory = async () => {
+  playSound('snd-click');
+  const cropSelect = document.getElementById('weather-crop-select');
+  if (!cropSelect) return;
+  const crop = cropSelect.value;
+  
+  const loadingEl = document.getElementById('weather-ai-loading');
+  const boxEl = document.getElementById('weather-ai-advice-box');
+  
+  if (!currentWeatherDataPayload) {
+    alert("Please wait until weather data is loaded first.");
+    return;
+  }
+  
+  if (loadingEl) loadingEl.classList.remove('hidden');
+  if (boxEl) boxEl.classList.add('hidden');
+  
+  const advisory = await fetchCropWeatherAdvisory(crop, currentWeatherDataPayload, appState.currentLanguage);
+  
+  if (loadingEl) loadingEl.classList.add('hidden');
+  if (boxEl) boxEl.classList.remove('hidden');
+  
+  if (advisory) {
+    let riskBadgeClass = 'safe';
+    if (advisory.riskLevel === 'Caution') riskBadgeClass = 'caution';
+    else if (advisory.riskLevel === 'Danger') riskBadgeClass = 'danger';
+
+    boxEl.innerHTML = `
+      <div class="ai-advice-section">
+        <h4 style="color: var(--primary-dark);">🤖 Crop Advisory Summary</h4>
+        <p>${advisory.advisory}</p>
+      </div>
+
+      <div class="ai-advice-section">
+        <h4>💧 Watering & Irrigation</h4>
+        <p>${advisory.watering}</p>
+      </div>
+
+      <div class="ai-advice-section">
+        <h4>🐛 Pest & Disease Protection</h4>
+        <p>${advisory.pesticide}</p>
+      </div>
+
+      <div class="ai-advice-section">
+        <h4>🌱 Fertilizer Management</h4>
+        <p>${advisory.fertilizer}</p>
+      </div>
+
+      <div class="ai-advice-section">
+        <h4>🌾 Harvesting Schedule</h4>
+        <p>${advisory.harvest}</p>
+      </div>
+
+      <div class="ai-advice-section" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h4 style="margin:0;">Risk Level</h4>
+          <span style="font-size:0.8rem; color:var(--text-secondary);">${advisory.riskReason}</span>
+        </div>
+        <span class="risk-badge ${riskBadgeClass}">${advisory.riskLevel}</span>
+      </div>
+    `;
+  } else {
+    boxEl.innerHTML = `
+      <div class="weather-advice-alert alert-blue">
+        <div class="alert-icon-wrap">⚠️</div>
+        <div class="alert-content-wrap">
+          <h4 class="advice-heading">Advisory Offline</h4>
+          <p>Could not connect to Gemini AI. Check your internet connection and try again.</p>
+        </div>
+      </div>
+    `;
+  }
+};
+
+const triggerGeolocation = async () => {
+  playSound('snd-click');
+  const nameEl = document.getElementById('weather-location-name');
+  if (nameEl) nameEl.innerText = "Acquiring GPS Position...";
+  
+  try {
+    const coords = await getBrowserLocation();
+    weatherCoords = coords;
+    
+    // Reverse geocode to get name
+    const name = await reverseGeocode(coords.lat, coords.lon);
+    
+    await updateWeatherDashboard(coords.lat, coords.lon, name);
+  } catch (error) {
+    console.error("Geolocation trigger failed:", error);
+    alert(error.message || "Could not acquire geolocation.");
+    // Fallback to cache or defaults
+    const cached = loadWeatherFromCache();
+    if (cached) {
+      weatherCoords = cached.data ? { lat: cached.data.lat || 26.76, lon: cached.data.lon || 83.37 } : weatherCoords;
+      renderWeatherData(cached.data, cached.locationName, true);
+      currentWeatherDataPayload = cached.data;
+      updateRelativeTimeText(cached.timestamp);
+    } else {
+      if (nameEl) nameEl.innerText = "Uttar Pradesh (Default)";
+      await updateWeatherDashboard(weatherCoords.lat, weatherCoords.lon, "Gorakhpur, Uttar Pradesh");
+    }
+  }
+};
+
+const triggerManualWeatherSearch = async () => {
+  const input = document.getElementById('weather-search-input');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) {
+    alert("Please enter a village, city, district, state, or pincode to search.");
+    return;
+  }
+  
+  playSound('snd-click');
+  const nameEl = document.getElementById('weather-location-name');
+  if (nameEl) nameEl.innerText = `Searching for "${val}"...`;
+  
+  try {
+    const resolved = await forwardGeocode(val);
+    if (!resolved) {
+      alert(`Could not find coordinates for "${val}". Please try another name or pincode.`);
+      if (nameEl) nameEl.innerText = "Location Not Found";
+      return;
+    }
+    
+    weatherCoords = { lat: resolved.lat, lon: resolved.lon };
+    await updateWeatherDashboard(resolved.lat, resolved.lon, resolved.name);
+  } catch (error) {
+    alert("Geocoding service error. Check connection.");
+    if (nameEl) nameEl.innerText = "Search Error";
+  }
+};
+
+const triggerWeatherRefresh = async () => {
+  playSound('snd-chime');
+  const nameEl = document.getElementById('weather-location-name');
+  const currentName = nameEl ? nameEl.innerText : "Gorakhpur, Uttar Pradesh";
+  await updateWeatherDashboard(weatherCoords.lat, weatherCoords.lon, currentName);
+};
+
+const updateWeatherDashboard = async (lat, lon, name) => {
+  try {
+    const data = await fetchLiveWeather(lat, lon);
+    // Add lat/lon reference to data
+    data.lat = lat;
+    data.lon = lon;
+    
+    currentWeatherDataPayload = data;
+    renderWeatherData(data, name, false);
+    saveWeatherToCache(data, name);
+    updateRelativeTimeText(new Date().getTime());
+    
+    // Automatically trigger crop advice update when weather is re-loaded
+    setTimeout(() => {
+      triggerCropAdvisory();
+    }, 100);
+  } catch (error) {
+    console.warn("Live weather update failed, trying to load cached weather data:", error);
+    const cached = loadWeatherFromCache();
+    if (cached) {
+      currentWeatherDataPayload = cached.data;
+      renderWeatherData(cached.data, cached.locationName, true);
+      updateRelativeTimeText(cached.timestamp);
+      setTimeout(() => {
+        triggerCropAdvisory();
+      }, 100);
+    } else {
+      alert("Failed to load weather data. Please verify your internet connection.");
+    }
+  }
+};
+
+let relativeTimeInterval = null;
+const updateRelativeTimeText = (timestamp) => {
+  if (relativeTimeInterval) clearInterval(relativeTimeInterval);
+  
+  const textEl = document.getElementById('weather-last-updated');
+  if (!textEl) return;
+  
+  textEl.innerText = `Last Updated: ${getRelativeTimeString(timestamp)}`;
+  
+  relativeTimeInterval = setInterval(() => {
+    textEl.innerText = `Last Updated: ${getRelativeTimeString(timestamp)}`;
+  }, 30000); // Update text every 30 seconds
+};
+
+const setupWeatherPage = async () => {
+  // Check if cache exists
+  const cached = loadWeatherFromCache();
+  if (cached) {
+    currentWeatherDataPayload = cached.data;
+    weatherCoords = cached.data ? { lat: cached.data.lat || 26.76, lon: cached.data.lon || 83.37 } : weatherCoords;
+    renderWeatherData(cached.data, cached.locationName, true);
+    updateRelativeTimeText(cached.timestamp);
+    
+    // Trigger initial advisory
+    setTimeout(() => {
+      triggerCropAdvisory();
+    }, 150);
+  } else {
+    // Attempt automatic geolocation on load
+    await triggerGeolocation();
+  }
+
+  // Bind Enter key on search input
+  const input = document.getElementById('weather-search-input');
+  if (input) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        triggerManualWeatherSearch();
+      }
+    });
+  }
+
+  // Setup 15 minutes auto-refresh (15 * 60 * 1000 = 900,000 ms)
+  if (weatherRefreshInterval) clearInterval(weatherRefreshInterval);
+  weatherRefreshInterval = setInterval(() => {
+    console.log("Triggering 15-minute weather auto-refresh...");
+    triggerWeatherRefresh();
+  }, 900000);
+};
