@@ -1,0 +1,77 @@
+﻿[
+  {
+    "id": "pesticide-tricyclazole-rice-blast",
+    "category": "pesticide",
+    "title": "Tricyclazole 75 WP (Rice Blast Treatment)",
+    "description": "Chemical fungicide used to control Rice Blast disease in paddy fields.",
+    "metadata": {
+      "type": "Chemical Fungicide",
+      "targetDisease": "Rice Blast (Magnaporthe oryzae)",
+      "targetCrop": "Paddy / Rice",
+      "dosage": "0.6 grams per liter of water",
+      "applicationMethod": "Foliar spray",
+      "precautions": "Avoid water logging in fields after application. Do not spray during rain.",
+      "weatherConstraint": "Do not spray if rain probability is above 50% or winds exceed 15 km/h"
+    }
+  },
+  {
+    "id": "pesticide-neem-oil-organic",
+    "category": "pesticide",
+    "title": "Neem Oil Formulation 3000 ppm (Organic)",
+    "description": "Organic bio-pesticide made from neem extract used to control fungal diseases and insects.",
+    "metadata": {
+      "type": "Organic Bio-Pesticide",
+      "targetDisease": "Rice Blast, various fungal infections",
+      "targetCrop": "Paddy / Rice, general crops",
+      "dosage": "3 ml per liter of water",
+      "applicationMethod": "Foliar spray",
+      "precautions": "Ensure proper plant spacing before application. Best applied in early morning or evening.",
+      "weatherConstraint": "Avoid spraying in strong winds or during active rainfall"
+    }
+  },
+  {
+    "id": "pesticide-imidacloprid-cotton",
+    "category": "pesticide",
+    "title": "Imidacloprid 17.8 SL (Cotton Whitefly Control)",
+    "description": "Systemic insecticide used to control whitefly vectors responsible for Cotton Leaf Curl disease.",
+    "metadata": {
+      "type": "Chemical Insecticide",
+      "targetPest": "Whitefly (Bemisia tabaci) - vector of Cotton Leaf Curl Virus",
+      "targetCrop": "Cotton",
+      "dosage": "0.5 ml per liter of water",
+      "applicationMethod": "Foliar spray",
+      "precautions": "Wear protective gear. Avoid spraying near water bodies. Keep away from children.",
+      "weatherConstraint": "Do not spray during rain or strong winds"
+    }
+  },
+  {
+    "id": "pesticide-mancozeb-tomato",
+    "category": "pesticide",
+    "title": "Mancozeb 75 WP (Tomato Early Blight Treatment)",
+    "description": "Contact fungicide used to control Early Blight and other fungal diseases in tomato crops.",
+    "metadata": {
+      "type": "Chemical Fungicide",
+      "targetDisease": "Early Blight (Alternaria solani)",
+      "targetCrop": "Tomato",
+      "dosage": "2 grams per liter of water",
+      "applicationMethod": "Foliar spray - apply immediately at first sign of disease",
+      "precautions": "Wear protective clothing. Wash hands after use.",
+      "weatherConstraint": "Apply when no rain is expected for at least 6 hours"
+    }
+  },
+  {
+    "id": "pesticide-trichoderma-biocontrol",
+    "category": "pesticide",
+    "title": "Trichoderma (Bio-Pesticide Fungal Control)",
+    "description": "Biological fungicide made from beneficial Trichoderma fungi used for organic crop protection.",
+    "metadata": {
+      "type": "Bio-Pesticide / Organic Fungicide",
+      "targetDisease": "Early Blight, soil-borne pathogens",
+      "targetCrop": "Tomato, Vegetables",
+      "dosage": "As per product label - typically 5-10 grams per liter of water",
+      "applicationMethod": "Foliar spray or soil drench",
+      "precautions": "Store in cool place. Do not mix with chemical fungicides.",
+      "weatherConstraint": "Best applied in humid conditions for spore germination; avoid strong UV sunlight"
+    }
+  }
+]

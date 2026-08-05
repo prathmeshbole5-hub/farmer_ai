@@ -1,0 +1,57 @@
+﻿[
+  {
+    "id": "mandi-laxmipur-apmc",
+    "category": "mandi",
+    "title": "Laxmipur APMC",
+    "description": "Government APMC mandi located 12km from Kishanpur. Known for high paddy and tomato prices.",
+    "metadata": {
+      "distance": "12km",
+      "type": "Government APMC",
+      "cropPrices": {
+        "paddy": { "price": 2350, "trend": "up" },
+        "wheat": { "price": 2150, "trend": "down" },
+        "tomato": { "price": 1650, "trend": "up" },
+        "potato": { "price": 1350, "trend": "stable" },
+        "mustard": { "price": 5300, "trend": "stable" }
+      },
+      "highlightedFor": ["paddy", "tomato", "potato"]
+    }
+  },
+  {
+    "id": "mandi-gorakhpur-sadar",
+    "category": "mandi",
+    "title": "Gorakhpur Sadar Mandi",
+    "description": "Gorakhpur district mandi located 18km from Kishanpur. Highest prices for wheat and mustard.",
+    "metadata": {
+      "distance": "18km",
+      "type": "Government APMC",
+      "cropPrices": {
+        "paddy": { "price": 2210, "trend": "up" },
+        "wheat": { "price": 2275, "trend": "up" },
+        "tomato": { "price": 1400, "trend": "down" },
+        "potato": { "price": 1280, "trend": "up" },
+        "mustard": { "price": 5450, "trend": "up" }
+      },
+      "highlightedFor": ["wheat", "mustard"]
+    }
+  },
+  {
+    "id": "mandi-kishanpur-local",
+    "category": "mandi",
+    "title": "Kishanpur Mandi",
+    "description": "Nearest local mandi at 4km. Best for tomatoes today due to low supply. Lower prices for paddy.",
+    "metadata": {
+      "distance": "4km",
+      "type": "Local Mandi",
+      "cropPrices": {
+        "paddy": { "price": 2050, "trend": "down" },
+        "wheat": { "price": 2200, "trend": "stable" },
+        "tomato": { "price": 1800, "trend": "up" },
+        "potato": { "price": 1100, "trend": "down" },
+        "mustard": { "price": 5100, "trend": "down" }
+      },
+      "highlightedFor": ["tomato"],
+      "note": "Kishanpur Mandi is paying premium Rs.1800/Qtl today for tomatoes due to low supply."
+    }
+  }
+]

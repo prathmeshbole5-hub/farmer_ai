@@ -1,0 +1,128 @@
+﻿[
+  {
+    "id": "weather-code-map",
+    "category": "weather",
+    "title": "WMO Weather Code Mapping",
+    "description": "WMO Weather Interpretation Codes (WW) mapped to human-readable descriptions and emojis for display in the KrishiMitra weather dashboard.",
+    "metadata": {
+      "source": "Open-Meteo API / WMO Weather Codes",
+      "codeMap": {
+        "0":  { "text": "Clear Sky",                    "emoji": "sunny" },
+        "1":  { "text": "Mainly Clear",                 "emoji": "partly sunny" },
+        "2":  { "text": "Partly Cloudy",                "emoji": "partly cloudy" },
+        "3":  { "text": "Overcast",                     "emoji": "cloudy" },
+        "45": { "text": "Foggy",                        "emoji": "fog" },
+        "48": { "text": "Depositing Rime Fog",          "emoji": "fog" },
+        "51": { "text": "Light Drizzle",                "emoji": "drizzle" },
+        "53": { "text": "Moderate Drizzle",             "emoji": "drizzle" },
+        "55": { "text": "Dense Drizzle",                "emoji": "drizzle" },
+        "61": { "text": "Slight Rain",                  "emoji": "rain" },
+        "63": { "text": "Moderate Rain",                "emoji": "rain" },
+        "65": { "text": "Heavy Rain",                   "emoji": "heavy rain" },
+        "80": { "text": "Slight Rain Showers",          "emoji": "showers" },
+        "81": { "text": "Moderate Rain Showers",        "emoji": "showers" },
+        "82": { "text": "Violent Rain Showers",         "emoji": "thunderstorm" },
+        "95": { "text": "Thunderstorm",                 "emoji": "thunderstorm" },
+        "96": { "text": "Thunderstorm with Hail",       "emoji": "thunderstorm hail" },
+        "99": { "text": "Heavy Thunderstorm with Hail", "emoji": "thunderstorm hail" }
+      }
+    }
+  },
+  {
+    "id": "weather-alert-thresholds",
+    "category": "weather",
+    "title": "Weather Alert Thresholds for Farmers",
+    "description": "Threshold values used by KrishiMitra to raise weather-specific farming alerts including danger and caution warnings.",
+    "metadata": {
+      "alerts": [
+        {
+          "id": "thunderstorm-warning",
+          "type": "danger",
+          "title": "Thunderstorm Warning",
+          "triggerCodes": [95, 96, 99],
+          "description": "Lightning and electrical storm active. Seek shelter indoors. Postpone using field machinery."
+        },
+        {
+          "id": "heatwave-alert",
+          "type": "danger",
+          "title": "Heatwave Alert",
+          "triggerCondition": "temperature >= 40°C",
+          "description": "Extreme temperatures exceeding 40°C. Avoid outdoor labor in peak hours. Ensure adequate crop watering."
+        },
+        {
+          "id": "cold-wave-alert",
+          "type": "danger",
+          "title": "Cold Wave Alert",
+          "triggerCondition": "temperature <= 10°C",
+          "description": "Temperatures dropped below 10°C. Cover frost-sensitive crops or trigger light night irrigation."
+        },
+        {
+          "id": "heavy-rain-warning",
+          "type": "caution",
+          "title": "Heavy Rain Warning",
+          "triggerCondition": "rainProbability > 75% or weatherCode in [65, 82]",
+          "description": "Heavy localized showers expected. Clear drainage pathways to avoid field flooding."
+        },
+        {
+          "id": "strong-wind-warning",
+          "type": "caution",
+          "title": "Strong Wind Warning",
+          "triggerCondition": "windSpeed > 25 km/h",
+          "description": "High wind velocity exceeding 25 km/h. Postpone foliar spraying; secure crop supports."
+        },
+        {
+          "id": "fog-warning",
+          "type": "caution",
+          "title": "Fog Warning",
+          "triggerCodes": [45, 48],
+          "description": "Dense fog limiting visibility. Exercise caution during early morning operations."
+        }
+      ],
+      "defaultLocation": {
+        "name": "Gorakhpur, Uttar Pradesh",
+        "lat": 26.7606,
+        "lon": 83.3731
+      },
+      "apiSource": "Open-Meteo (open-meteo.com)",
+      "aqiSource": "Open-Meteo Air Quality API",
+      "geocodingSource": "OSM Nominatim"
+    }
+  },
+  {
+    "id": "weather-aqi-descriptions",
+    "category": "weather",
+    "title": "Air Quality Index (AQI) Descriptions",
+    "description": "US AQI scale descriptions used in KrishiMitra weather dashboard for farmer air quality awareness.",
+    "metadata": {
+      "scale": "US AQI",
+      "levels": [
+        { "range": "0-50",   "label": "Good" },
+        { "range": "51-100", "label": "Satisfactory" },
+        { "range": "101-200","label": "Moderate" },
+        { "range": "201-300","label": "Poor" },
+        { "range": "301-400","label": "Very Poor" },
+        { "range": "401+",   "label": "Severe" }
+      ]
+    }
+  },
+  {
+    "id": "weather-crop-advisory-structure",
+    "category": "weather",
+    "title": "Crop-Specific Weather Advisory Structure",
+    "description": "JSON structure generated by Gemini AI for crop-specific weather farming recommendations.",
+    "metadata": {
+      "generatedBy": "Gemini AI (gemini-2.5-flash via Google Generative Language API)",
+      "advisoryFields": {
+        "advisory": "2-sentence summary of crop health suggestions under current weather conditions",
+        "watering": "Irrigation guidelines based on humidity, temperature, and rain likelihood",
+        "pesticide": "Pesticide spray recommendations based on rain probability and wind speed",
+        "fertilizer": "Fertilizer advice based on weather impact on absorption",
+        "harvest": "Harvesting advice based on approaching storms or moisture levels",
+        "riskLevel": "One of: Safe / Caution / Danger",
+        "riskReason": "One brief reason explaining the assigned risk level"
+      },
+      "fallbackBehavior": "If Gemini API is unavailable, fallback advisories are served based on rainProbability > 50% and humidity > 75% thresholds",
+      "autoRefreshInterval": "15 minutes (900,000 ms)"
+    }
+  }
+]

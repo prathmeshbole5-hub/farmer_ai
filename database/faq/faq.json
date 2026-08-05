@@ -1,0 +1,98 @@
+﻿[
+  {
+    "id": "faq-wheat-price",
+    "category": "faq",
+    "title": "What is the wheat price in Mandi today?",
+    "description": "Wheat (Lokwan) mandi price query answered by KrishiMitra Voice AI.",
+    "metadata": {
+      "trigger": ["wheat", "gehu", "lokwan", "kanak"],
+      "voiceResponse": "The highest price for Wheat (Lokwan) is Rs.2275/Qtl at Gorakhpur Sadar Mandi (18km). The lowest price is Rs.2150/Qtl at Laxmipur APMC (12km). Wheat rates are highest in Gorakhpur Sadar Mandi. We advise wait 3 days as prices are rising.",
+      "relatedModule": "Market / Mandi Prices",
+      "language": "en"
+    }
+  },
+  {
+    "id": "faq-rice-blast-cure",
+    "category": "faq",
+    "title": "How do I cure rice brown spots?",
+    "description": "Voice AI response for rice disease queries. Directs farmer to Vision Lab for AI diagnosis.",
+    "metadata": {
+      "trigger": ["disease", "spots", "rog", "bimari", "blast"],
+      "voiceResponse": "If your leaves have brown spots, it could be Rice Blast. Switch to the 'Vision Lab' tab, upload a picture, and our AI scanner will diagnose it immediately and give organic and chemical treatments.",
+      "relatedModule": "Vision Lab - Disease Scanner",
+      "language": "en"
+    }
+  },
+  {
+    "id": "faq-pm-kusum-scheme",
+    "category": "faq",
+    "title": "What is PM Kusum Scheme?",
+    "description": "Voice AI explanation of PM KUSUM Yojana for solar water pump subsidy.",
+    "metadata": {
+      "trigger": ["kusum", "solar", "pump", "subsidy"],
+      "voiceResponse": "Under PM Kusum Yojana, you can get a 60% government subsidy to install Solar water pumps. Required documents: Land Jamabandi ownership papers, borewell certification, and Aadhaar card.",
+      "relatedModule": "Schemes - PM KUSUM",
+      "language": "en"
+    }
+  },
+  {
+    "id": "faq-weather-advisory",
+    "category": "faq",
+    "title": "What is the weather advisory today?",
+    "description": "Voice AI weather response including current conditions and crop advisory.",
+    "metadata": {
+      "trigger": ["weather", "rain", "mausam", "barish", "varsha", "hava"],
+      "voiceResponse": "Today is 29°C with Light Rain (80% probability). AI Crop Advisory: Rain is expected, so postpone spraying nitrogen/urea fertilizer or pesticides today.",
+      "relatedModule": "Weather",
+      "language": "en"
+    }
+  },
+  {
+    "id": "faq-soil-recommendation",
+    "category": "faq",
+    "title": "What crop is best for my soil?",
+    "description": "Voice AI answer for soil type based crop recommendations.",
+    "metadata": {
+      "trigger": ["soil", "mitti", "maati", "zameen"],
+      "voiceResponse": "For Alluvial Soil, we recommend growing Wheat, Paddy, and Potato crops. Use organic compost (gobhar khad) to improve low organic carbon levels. Check Vision Lab to analyze soil images.",
+      "relatedModule": "Vision Lab - Soil Analyzer",
+      "language": "en"
+    }
+  },
+  {
+    "id": "faq-pm-kisan-samman",
+    "category": "faq",
+    "title": "How do I get PM Kisan Samman Nidhi money?",
+    "description": "Voice AI answer explaining PM-Kisan direct benefit transfer process.",
+    "metadata": {
+      "trigger": ["kisan", "samman", "6000", "pm kisan", "income support"],
+      "voiceResponse": "PM Kisan Samman Nidhi gives Rs.6,000 yearly income support directly into farmers' bank accounts. Link your Aadhaar card with your bank to receive installments.",
+      "relatedModule": "Schemes - PM Kisan",
+      "language": "en"
+    }
+  },
+  {
+    "id": "faq-paddy-price",
+    "category": "faq",
+    "title": "What is the paddy price today?",
+    "description": "Voice AI response for paddy mandi price queries.",
+    "metadata": {
+      "trigger": ["paddy", "rice", "dhaan", "dhan", "chawal", "tandul", "jhona"],
+      "voiceResponse": "Rice Paddy prices today: Highest is Rs.2350/Qtl in Laxmipur APMC (12km). Lowest is Rs.2050/Qtl in Kishanpur Mandi (4km). Selling at Laxmipur APMC gives Rs.300/quintal more. Transport cost is Rs.40, net profit is higher.",
+      "relatedModule": "Market / Mandi Prices",
+      "language": "en"
+    }
+  },
+  {
+    "id": "faq-tomato-price",
+    "category": "faq",
+    "title": "What is the tomato price in mandi today?",
+    "description": "Voice AI response for tomato mandi price queries.",
+    "metadata": {
+      "trigger": ["tomato", "tamatar", "tameta", "tamatar"],
+      "voiceResponse": "Tomatoes are selling at an excellent rate today! Highest is Rs.1800/Qtl in Kishanpur Mandi (4km). Lowest is Rs.1400/Qtl in Gorakhpur Sadar Mandi.",
+      "relatedModule": "Market / Mandi Prices",
+      "language": "en"
+    }
+  }
+]

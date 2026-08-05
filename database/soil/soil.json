@@ -1,0 +1,36 @@
+﻿[
+  {
+    "id": "soil-alluvial-clay-loam",
+    "category": "soil",
+    "title": "Alluvial Clay-Loam Soil (Domat Mitti)",
+    "description": "Common soil type in UP river plains. Low organic matter, medium water retention. Suitable for wheat, potato, mustard, and gram.",
+    "metadata": {
+      "soilType": "Alluvial Clay-Loam",
+      "localName": "Domat Mitti",
+      "healthScore": "72/100",
+      "moisture": "14% (Dry - Low Moisture)",
+      "organicMatter": "0.62% (Low)",
+      "waterRetention": "Medium",
+      "recommendedCrops": ["Wheat", "Potato", "Mustard", "Gram"],
+      "fertilizerAdvisory": "Apply 25kg Nitrogen (Urea), 15kg Phosphorus (DAP) per acre. Mix 5 tons organic cow compost (gobhar khad).",
+      "region": "North India - Uttar Pradesh, Bihar river plains"
+    }
+  },
+  {
+    "id": "soil-black-clayey",
+    "category": "soil",
+    "title": "Black Clayey Soil (Kaali Mitti)",
+    "description": "High organic matter, high water retention soil type. Excellent for cotton, soybeans, pigeon pea, and paddy.",
+    "metadata": {
+      "soilType": "Black Clayey Soil",
+      "localName": "Kaali Mitti / Regur Soil",
+      "healthScore": "89/100",
+      "moisture": "28% (Optimal - High Moisture)",
+      "organicMatter": "1.15% (Optimal)",
+      "waterRetention": "High",
+      "recommendedCrops": ["Cotton", "Soybeans", "Pigeon Pea", "Paddy"],
+      "fertilizerAdvisory": "Soil health is highly rich. Add 10kg Zinc Sulphate per acre to enhance micro-nutrients. Regular compost sufficient.",
+      "region": "Central India - Maharashtra, MP, Telangana, Karnataka"
+    }
+  }
+]

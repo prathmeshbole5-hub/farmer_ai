@@ -1,0 +1,62 @@
+﻿[
+  {
+    "id": "fertilizer-urea-nitrogen",
+    "category": "fertilizer",
+    "title": "Urea (Nitrogen Fertilizer)",
+    "description": "Primary nitrogen source fertilizer. Should not be applied before or during rain events to avoid wash-off and loss.",
+    "metadata": {
+      "nutrient": "Nitrogen (N)",
+      "application": "25kg Nitrogen (Urea) per acre for Alluvial Clay-Loam soil",
+      "timing": "Avoid application during rain probability above 50% or before expected heavy downpours",
+      "advisory": "Rain showers expected for the next 24 hours. Postpone nitrogen/urea fertilizer applications. Keep drainage channels open in vegetable beds to prevent water logging.",
+      "weatherCondition": "Do not apply in wet or waterlogged conditions",
+      "compatibleSoils": ["Alluvial Clay-Loam", "Sandy Loam"],
+      "compatibleCrops": ["Wheat", "Paddy", "Potato", "Mustard"]
+    }
+  },
+  {
+    "id": "fertilizer-dap-phosphorus",
+    "category": "fertilizer",
+    "title": "DAP (Phosphorus Fertilizer)",
+    "description": "Di-Ammonium Phosphate - primary phosphorus and secondary nitrogen source for most crops.",
+    "metadata": {
+      "nutrient": "Phosphorus (P)",
+      "application": "15kg Phosphorus (DAP) per acre for Alluvial Clay-Loam soil",
+      "timing": "Apply in dry soil before sowing for best absorption",
+      "advisory": "Avoid applying urea or top-dressing fertilizers when rain will wash it away.",
+      "weatherCondition": "Apply during dry breaks in weather; avoid during rain",
+      "compatibleSoils": ["Alluvial Clay-Loam", "Black Clayey Soil"],
+      "compatibleCrops": ["Wheat", "Paddy", "Mustard", "Gram"]
+    }
+  },
+  {
+    "id": "fertilizer-organic-compost",
+    "category": "fertilizer",
+    "title": "Organic Cow Compost (Gobhar Khad)",
+    "description": "Farm yard manure / organic compost that improves soil organic carbon, water retention, and microbial activity.",
+    "metadata": {
+      "nutrient": "Organic Matter",
+      "application": "Mix 5 tons organic cow compost (gobhar khad) per acre. For Black Clayey Soil: regular compost is sufficient.",
+      "timing": "Apply before sowing season for best results",
+      "advisory": "Alluvial soil organic matter is 0.62% (Low). Apply gobhar khad to improve fertility.",
+      "weatherCondition": "Can be applied in any weather condition",
+      "compatibleSoils": ["Alluvial Clay-Loam", "Black Clayey Soil"],
+      "compatibleCrops": ["Wheat", "Paddy", "Potato", "Cotton", "Soybeans"]
+    }
+  },
+  {
+    "id": "fertilizer-zinc-sulphate",
+    "category": "fertilizer",
+    "title": "Zinc Sulphate (Micronutrient)",
+    "description": "Zinc micronutrient fertilizer used in Black Clayey Soil to enhance micronutrient availability.",
+    "metadata": {
+      "nutrient": "Zinc (Zn)",
+      "application": "Add 10kg Zinc Sulphate per acre to enhance micro-nutrients in Black Clayey Soil",
+      "timing": "Apply during base fertilizer application before sowing",
+      "advisory": "Soil health is highly rich in Black Clayey Soil. Add Zinc Sulphate to fill micronutrient gaps.",
+      "weatherCondition": "Apply in dry conditions",
+      "compatibleSoils": ["Black Clayey Soil"],
+      "compatibleCrops": ["Cotton", "Soybeans", "Pigeon Pea", "Paddy"]
+    }
+  }
+]

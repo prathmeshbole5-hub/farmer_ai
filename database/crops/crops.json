@@ -1,0 +1,122 @@
+﻿[
+  {
+    "id": "crop-paddy-basmati",
+    "category": "crop",
+    "title": "Paddy (Basmati)",
+    "description": "Basmati paddy grown in North India. High-value aromatic rice variety traded in APMC mandis.",
+    "metadata": {
+      "nameEN": "Paddy (Basmati)",
+      "nameHI": "Paddy (Basmati)",
+      "emoji": "Paddy",
+      "mandiPrices": {
+        "highest": 2350,
+        "highestMandi": "Laxmipur APMC (12km)",
+        "lowest": 2050,
+        "lowestMandi": "Kishanpur Mandi (4km)",
+        "unit": "Rs/Quintal"
+      },
+      "marketRecommendation": "Selling at Laxmipur APMC gives Rs.300/quintal more. Transport cost is Rs.40, net profit is higher.",
+      "prices": [
+        { "name": "Laxmipur APMC", "price": 2350, "distance": "12km", "trend": "up" },
+        { "name": "Gorakhpur Sadar Mandi", "price": 2210, "distance": "18km", "trend": "up" },
+        { "name": "Kishanpur Mandi", "price": 2050, "distance": "4km", "trend": "down" }
+      ]
+    }
+  },
+  {
+    "id": "crop-wheat-lokwan",
+    "category": "crop",
+    "title": "Wheat (Lokwan)",
+    "description": "Lokwan wheat variety commonly grown in Uttar Pradesh and traded across nearby mandis.",
+    "metadata": {
+      "nameEN": "Wheat (Lokwan)",
+      "nameHI": "Wheat (Lokwan)",
+      "emoji": "Wheat",
+      "mandiPrices": {
+        "highest": 2275,
+        "highestMandi": "Gorakhpur Sadar Mandi (18km)",
+        "lowest": 2150,
+        "lowestMandi": "Laxmipur APMC (12km)",
+        "unit": "Rs/Quintal"
+      },
+      "marketRecommendation": "Wheat rates are highest in Gorakhpur Sadar Mandi. We advise wait 3 days as prices are rising.",
+      "prices": [
+        { "name": "Gorakhpur Sadar Mandi", "price": 2275, "distance": "18km", "trend": "up" },
+        { "name": "Kishanpur Mandi", "price": 2200, "distance": "4km", "trend": "stable" },
+        { "name": "Laxmipur APMC", "price": 2150, "distance": "12km", "trend": "down" }
+      ]
+    }
+  },
+  {
+    "id": "crop-tomato-desi",
+    "category": "crop",
+    "title": "Tomato (Desi)",
+    "description": "Desi tomato variety grown as a vegetable crop in UP. Prices are highly volatile based on supply.",
+    "metadata": {
+      "nameEN": "Tomato (Desi)",
+      "nameHI": "Tomato (Desi)",
+      "emoji": "Tomato",
+      "mandiPrices": {
+        "highest": 1800,
+        "highestMandi": "Kishanpur Mandi (4km)",
+        "lowest": 1400,
+        "lowestMandi": "Gorakhpur Sadar Mandi (18km)",
+        "unit": "Rs/Quintal"
+      },
+      "marketRecommendation": "Tomato prices are highly volatile. Kishanpur Mandi is paying premium Rs.1800/Qtl today due to low supply.",
+      "prices": [
+        { "name": "Kishanpur Mandi", "price": 1800, "distance": "4km", "trend": "up" },
+        { "name": "Laxmipur APMC", "price": 1650, "distance": "12km", "trend": "up" },
+        { "name": "Gorakhpur Sadar Mandi", "price": 1400, "distance": "18km", "trend": "down" }
+      ]
+    }
+  },
+  {
+    "id": "crop-potato-jyoti",
+    "category": "crop",
+    "title": "Potato (Jyoti)",
+    "description": "Jyoti potato variety with good storage lifetime; suited for cold storage and distant markets.",
+    "metadata": {
+      "nameEN": "Potato (Jyoti)",
+      "nameHI": "Potato (Jyoti)",
+      "emoji": "Potato",
+      "mandiPrices": {
+        "highest": 1350,
+        "highestMandi": "Laxmipur APMC (12km)",
+        "lowest": 1100,
+        "lowestMandi": "Kishanpur Mandi (4km)",
+        "unit": "Rs/Quintal"
+      },
+      "marketRecommendation": "Potatoes have solid storage lifetime. Consider storing in Cold Storage if you can't transport to Laxmipur.",
+      "prices": [
+        { "name": "Laxmipur APMC", "price": 1350, "distance": "12km", "trend": "stable" },
+        { "name": "Gorakhpur Sadar Mandi", "price": 1280, "distance": "18km", "trend": "up" },
+        { "name": "Kishanpur Mandi", "price": 1100, "distance": "4km", "trend": "down" }
+      ]
+    }
+  },
+  {
+    "id": "crop-mustard-seed",
+    "category": "crop",
+    "title": "Mustard Seed",
+    "description": "Yellow mustard seed (Sarson) grown as a Rabi oilseed crop. MSP is set by the Government.",
+    "metadata": {
+      "nameEN": "Mustard Seed",
+      "nameHI": "Mustard Seed",
+      "emoji": "Mustard",
+      "mandiPrices": {
+        "highest": 5450,
+        "highestMandi": "Gorakhpur Sadar Mandi (18km)",
+        "lowest": 5100,
+        "lowestMandi": "Kishanpur Mandi (4km)",
+        "unit": "Rs/Quintal"
+      },
+      "marketRecommendation": "Government MSP is Rs.5650. Mandi rates are lower; consider selling to government procurement centers directly.",
+      "prices": [
+        { "name": "Gorakhpur Sadar Mandi", "price": 5450, "distance": "18km", "trend": "up" },
+        { "name": "Laxmipur APMC", "price": 5300, "distance": "12km", "trend": "stable" },
+        { "name": "Kishanpur Mandi", "price": 5100, "distance": "4km", "trend": "down" }
+      ]
+    }
+  }
+]

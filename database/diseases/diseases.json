@@ -1,0 +1,53 @@
+﻿[
+  {
+    "id": "disease-rice-blast",
+    "category": "disease",
+    "title": "Rice Blast (Dhaan ka Jhonka Rog)",
+    "description": "Spindle-shaped lesions on leaves with grayish centers. Spreads rapidly in high humidity conditions. Reported in Kishanpur block farms.",
+    "metadata": {
+      "crop": "Paddy / Rice",
+      "confidence": "94%",
+      "severity": "High",
+      "symptoms": "Spindle-shaped lesions on leaves with grayish centers. Spreading rapidly due to high humidity.",
+      "organicTreatment": "Spray Neem oil formulation (3,000 ppm) at 3 ml per liter of water. Ensure proper spacing between rows.",
+      "chemicalTreatment": "Spray Tricyclazole 75 WP at 0.6 grams per liter of water. Avoid water logging.",
+      "preventiveMeasures": "Destroy previous crop residues. Do not apply excessive nitrogen fertilizer.",
+      "outbreakIndicator": "3 nearby farms in Kishanpur reported Rice Blast in the last 48 hours.",
+      "reportType": "Leaf Disease Scan"
+    }
+  },
+  {
+    "id": "disease-cotton-leaf-curl",
+    "category": "disease",
+    "title": "Cotton Leaf Curl (Kapas ka Patta Marod Rog)",
+    "description": "Upward curling of leaf margins, thick veins on leaves, stunted plant growth in cotton crops.",
+    "metadata": {
+      "crop": "Cotton",
+      "confidence": "89%",
+      "severity": "Medium",
+      "symptoms": "Upward curling of leaf margins, thick veins on leaves, stunted plant growth.",
+      "organicTreatment": "Introduce ladybird beetles to control whiteflies vector. Spray garlic-chili extract.",
+      "chemicalTreatment": "Spray Imidacloprid 17.8 SL at 0.5 ml per liter of water to control vector.",
+      "preventiveMeasures": "Use resistant cotton hybrids. Eliminate weed hosts near field bunds.",
+      "outbreakIndicator": "1 farm in Laxmipur block reported leaf curl vector outbreak.",
+      "reportType": "Leaf Disease Scan"
+    }
+  },
+  {
+    "id": "disease-tomato-early-blight",
+    "category": "disease",
+    "title": "Early Blight (Ageti Jhulsa Rog)",
+    "description": "Concentric dark brown circular spots appearing first on older leaves, forming a target board pattern.",
+    "metadata": {
+      "crop": "Tomato",
+      "confidence": "91%",
+      "severity": "Medium-Low",
+      "symptoms": "Concentric dark brown circular spots appearing first on older leaves, forming a target board pattern.",
+      "organicTreatment": "Mulch soil surface with crop residue. Spray copper hydroxide or bio-pesticide Trichoderma.",
+      "chemicalTreatment": "Spray Mancozeb 75 WP at 2 grams per liter of water immediately.",
+      "preventiveMeasures": "Ensure crop rotation. Water roots directly instead of overhead leaf sprinkling.",
+      "outbreakIndicator": "No outbreaks reported within 5km radius.",
+      "reportType": "Leaf Disease Scan"
+    }
+  }
+]
