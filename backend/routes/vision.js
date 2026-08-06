@@ -1,9 +1,3 @@
-/* ==========================================================================
-   KrishiMitra AI — Vision Route (Crop Disease Scanner)
-   POST /api/vision
-   Accepts: multipart/form-data with field "image"
-   ========================================================================== */
-
 'use strict';
 
 const express = require('express');
@@ -11,85 +5,56 @@ const multer  = require('multer');
 const path    = require('path');
 const router  = express.Router();
 
-const db      = require('../services/databaseService');
-const ollama  = require('../services/ollamaService');
+const visionService = require('../services/visionService');
 
-// ── Multer config — save uploaded images to uploads/ ─────────────────────────
+// ======================================================
+// Multer Configuration (Uploads directory)
+// ======================================================
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, path.join(__dirname, '..', 'uploads'));
   },
   filename: (_req, file, cb) => {
-    const ext  = path.extname(file.originalname) || '.jpg';
-    const name = `scan_${Date.now()}${ext}`;
-    cb(null, name);
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `scan_${Date.now()}${ext}`);
   }
 });
-
-const fileFilter = (_req, file, cb) => {
-  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  if (allowed.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only JPEG, PNG, WEBP, and GIF images are accepted.'), false);
-  }
-};
 
 const upload = multer({
   storage,
-  fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10 MB max
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
-/**
- * POST /api/vision
- *
- * Body: multipart/form-data
- *   - image (file)  — required: crop/leaf image
- *   - cropType (string) — optional: hint e.g. "paddy", "wheat"
- *   - language (string) — optional: 'en' | 'hi' | ...
- *
- * Response:
- *   { success, scanId, diseases, recommendation, source }
- */
+// ======================================================
+// POST /api/vision
+// ======================================================
 router.post('/', upload.single('image'), async (req, res, next) => {
   try {
-    const cropType = req.body?.cropType || 'unknown';
-    const language = req.body?.language || 'en';
-    const scanId   = `scan_${Date.now()}`;
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'No image uploaded.'
+      });
+    }
 
-    // ── Mock disease detection (until real CV model is plugged in) ───────────
-    const query    = `${cropType} disease leaf`.trim();
-    const diseases = db.searchDisease(query, 3);
+    const imagePath = req.file.path;
 
-    // Pick the top disease as the primary detection
-    const primary = diseases[0] || null;
+    // Call TensorFlow Model via visionService
+    const result = await visionService.analyseImage(imagePath);
 
+    if (!result || !result.success) {
+      return res.status(500).json({
+        success: false,
+        error: result?.error || 'Crop disease prediction failed.'
+      });
+    }
+
+    // Return exact required JSON format
     return res.json({
-      success:  true,
-      scanId,
-      imagePath: req.file ? `/uploads/${req.file.filename}` : null,
-      cropType,
-      language,
-      detection: primary
-        ? {
-            diseaseId:         primary.id,
-            title:             primary.title,
-            description:       primary.description,
-            confidence:        primary.metadata?.confidence || '–',
-            severity:          primary.metadata?.severity  || '–',
-            organicTreatment:  primary.metadata?.organicTreatment  || null,
-            chemicalTreatment: primary.metadata?.chemicalTreatment || null,
-            preventiveMeasures:primary.metadata?.preventiveMeasures || null
-          }
-        : null,
-      relatedDiseases: diseases.slice(1).map(d => ({
-        id:    d.id,
-        title: d.title,
-        severity: d.metadata?.severity
-      })),
-      source: 'mock-rag',
-      note:   'Real computer-vision model (visionService) is ready to be plugged in.'
+      success: true,
+      disease: result.disease,
+      confidence: result.confidence,
+      imagePath: `/uploads/${req.file.filename}`
     });
 
   } catch (err) {
