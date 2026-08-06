@@ -1174,75 +1174,73 @@ const setupUploadListeners = () => {
 // --------------------------------------------------------------------------
 // 9. SIMULATED AI ENGINE & MOCK FUNCTIONS
 // --------------------------------------------------------------------------
-const triggerSimulatedAIAnalysis = () => {
+const triggerSimulatedAIconst handleFarmerVoiceQuestion = async (questionText) => {
+  if (!questionText || !questionText.trim()) return;
+  const cleanQuestion = questionText.trim();
+
+  addChatMessage(cleanQuestion, 'user-message');
   playSound('snd-chime');
-  const loading = document.getElementById('analysis-loading');
-  const results = document.getElementById('vision-results-area');
-  const btnAnalyze = document.getElementById('btn-analyze');
-  const previewImg = document.getElementById('image-preview').src;
 
-  // Disable button and show spinner
-  btnAnalyze.disabled = true;
-  loading.classList.remove('hidden');
-  results.classList.add('hidden');
+  const micBtn = document.getElementById('btn-microphone');
+  if (micBtn) { micBtn.disabled = true; micBtn.style.opacity = '0.5'; }
 
-  setTimeout(() => {
-    loading.classList.add('hidden');
-    results.classList.remove('hidden');
-    playSound('snd-success');
+  // Show thinking indicator in chat
+  const THINKING_ID = 'km-thinking-bubble';
+  let existing = document.getElementById(THINKING_ID);
+  if (existing) existing.remove();
 
-    let reportData = {};
+  const box = document.getElementById('chat-messages-box');
+  let bubble = null;
+  if (box) {
+    bubble = document.createElement('div');
+    bubble.id = THINKING_ID;
+    bubble.className = 'chat-bubble bot-message km-thinking';
+    bubble.innerHTML = `
+      <p style="display:flex;align-items:center;gap:8px;">
+        <span class="km-dots"><span>.</span><span>.</span><span>.</span></span>
+        <span>KrishiMitra AI is thinking (Gemma 3)...</span>
+      </p>
+    `;
+    box.appendChild(bubble);
+    box.scrollTop = box.scrollHeight;
+  }
 
-    // Execute mock function based on active vision tab
-    if (appState.activeVisionModule === 'disease') {
-      reportData = mockDetectDisease(appState.selectedSampleImage, previewImg);
-    } else if (appState.activeVisionModule === 'soil') {
-      reportData = mockAnalyzeSoil(appState.selectedSampleImage, previewImg);
-    } else if (appState.activeVisionModule === 'growth') {
-      reportData = mockAnalyzeGrowth(appState.selectedSampleImage, previewImg);
-    } else if (appState.activeVisionModule === 'grade') {
-      reportData = mockGradeProduce(appState.selectedSampleImage, previewImg);
-    } else if (appState.activeVisionModule === 'insurance') {
-      reportData = mockInsuranceReport(appState.selectedSampleImage, previewImg);
+  try {
+    let responseText = "";
+    const apiBase = (window.KrishiMitraConfig && window.KrishiMitraConfig.API_BASE_URL) || 'http://localhost:5000/api';
+    const lang = (window.appState && window.appState.currentLanguage) || 'en';
+
+    const res = await fetch(`${apiBase}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: cleanQuestion,
+        language: lang
+      })
+    });
+
+    const data = await res.json();
+
+    if (bubble) bubble.remove();
+
+    if (res.ok && data.success && data.reply) {
+      responseText = data.reply;
+    } else {
+      responseText = data.userError || "Offline AI is unavailable. Please start Ollama.";
     }
 
-    // Save to App State history and localStorage
-    appState.reportsHistory.unshift(reportData);
-    localStorage.setItem('km_history', JSON.stringify(appState.reportsHistory));
+    addChatMessage(responseText, 'bot-message');
+    playSound('snd-success');
+    speakAloud(responseText);
 
-    // Render results in Vision Area
-    renderVisionResults(reportData);
-    
-    // Refresh history grid in Profile page
-    renderHistory();
-
-    // Enable button again
-    btnAnalyze.disabled = false;
-  }, 1500);
-};
-
-// Mock disease function
-const mockDetectDisease = (name, img) => {
-  let disease = "Rice Blast (धान का झोंका रोग)";
-  let confidence = "94%";
-  let severity = "High (तीव्र)";
-  let symptoms = "Spindle-shaped lesions on leaves with grayish centers. Spreading rapidly due to high humidity.";
-  let organic = "Spray Neem oil formulation (3,000 ppm) at 3 ml per liter of water. Ensure proper spacing between rows.";
-  let chemical = "Spray Tricyclazole 75 WP at 0.6 grams per liter of water. Avoid water logging.";
-  let preventive = "Destroy previous crop residues. Do not apply excessive nitrogen fertilizer.";
-  let outbreak = "3 nearby farms in Kishanpur reported Rice Blast in the last 48 hours.";
-
-  if (name && name.includes("Cotton")) {
-    disease = "Cotton Leaf Curl (कपास का पत्ता मरोड़ रोग)";
-    confidence = "89%";
-    severity = "Medium (मध्यम)";
-    症状 = "Upward curling of leaf margins, thick veins on leaves, stunted plant growth.";
-    organic = "Introduce ladybird beetles to control whiteflies vector. Spray garlic-chili extract.";
-    chemical = "Spray Imidacloprid 17.8 SL at 0.5 ml per liter of water to control vector.";
-    preventive = "Use resistant cotton hybrids. Eliminate weed hosts near field bunds.";
-    outbreak = "1 farm in Laxmipur block reported leaf curl vector outbreak.";
-  } else if (name && name.includes("Tomato")) {
-    disease = "Early Blight (अगेती झुलसा रोग)";
+  } catch (err) {
+    if (bubble) bubble.remove();
+    console.error("Chat error:", err);
+    addChatMessage("Backend server is not running. Please start it with: npm start", 'bot-message');
+  } finally {
+    if (micBtn) { micBtn.disabled = false; micBtn.style.opacity = '1'; }
+  }
+};��गेती झुलसा रोग)";
     confidence = "91%";
     severity = "Medium-Low (हल्का)";
     symptoms = "Concentric dark brown circular spots appearing first on older leaves, forming a target board pattern.";

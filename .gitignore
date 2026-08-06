@@ -1,0 +1,39 @@
+# Python Bytecode & Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+.env
+venv/
+.venv/
+env/
+ai/.venv/
+ai/venv/
+
+# Dependencies
+node_modules/
+
+# Datasets (Large Image/Data files)
+ai/dataset/
+dataset/
+
+# Model Checkpoints & Large Weights (>100MB)
+*.keras
+*.h5
+*.pth
+*.onnx
+*.safetensors
+*.bin
+*.pt
+
+# Outputs & Temporary Logs
+ai/outputs/
+*.log
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,3 @@
+# KrishiMitra AI — Server logs stored here
+# app.log is written by middleware/logger.js
+# One log file per day recommended for production.

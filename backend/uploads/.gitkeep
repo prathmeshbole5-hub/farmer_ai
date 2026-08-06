@@ -1,0 +1,3 @@
+# KrishiMitra AI — Uploaded crop images stored here
+# This directory is served at http://localhost:5000/uploads/
+# Files are auto-created by multer during vision scans.

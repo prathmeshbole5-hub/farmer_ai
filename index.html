@@ -328,6 +328,36 @@
             <button class="btn-suggestion" onclick="askPresetQuestion(this.innerText)">"How do I apply for PM-KISAN?"</button>
           </div>
         </div>
+
+        <!-- ── Text Input Box (Ask Gemma by typing) ──────────────────────── -->
+        <div id="km-text-input-bar" style="display:flex;align-items:flex-end;gap:10px;padding:10px 14px 14px;border-top:1px solid rgba(0,0,0,0.08);">
+          <textarea
+            id="km-chat-input"
+            rows="1"
+            placeholder="Type your question here and press Send..."
+            aria-label="Type your farming question"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();kmSendText();}"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';"
+            onfocus="this.style.borderColor='#4caf50'"
+            onblur="this.style.borderColor='#d0d0d0'"
+            style="flex:1;resize:none;border:1.5px solid #d0d0d0;border-radius:22px;padding:10px 16px;font-size:15px;font-family:inherit;line-height:1.5;outline:none;background:#f7f8fa;color:#222;transition:border-color 0.2s;overflow-y:hidden;max-height:120px;"
+          ></textarea>
+          <button
+            id="km-chat-send-btn"
+            onclick="kmSendText()"
+            aria-label="Send question to KrishiMitra AI"
+            title="Send"
+            style="flex-shrink:0;width:46px;height:46px;border-radius:50%;border:none;background:#4caf50;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(76,175,80,0.35);transition:background 0.2s,transform 0.1s;"
+            onmouseover="this.style.background='#388e3c'"
+            onmouseout="this.style.background='#4caf50'"
+            onmousedown="this.style.transform='scale(0.92)'"
+            onmouseup="this.style.transform='scale(1)'"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+        <!-- ──────────────────────────────────────────────────────────────── -->
+
       </div>
     </section>
 
@@ -877,6 +907,50 @@
 
   <script src="weatherService.js"></script>
   <script src="weatherAIService.js"></script>
+  <script src="js/config.js"></script>
   <script src="script.js"></script>
+  <script src="js/gemmaChat.js"></script>
+
+  <!-- ── kmSendText: called by the text input box ───────────────────────── -->
+  <script>
+    function kmSendText() {
+      var inp = document.getElementById('km-chat-input');
+      var btn = document.getElementById('km-chat-send-btn');
+      if (!inp) return;
+
+      var text = inp.value.trim();
+      if (!text) return;
+
+      // Clear input immediately
+      inp.value = '';
+      inp.style.height = 'auto';
+
+      // Disable while waiting
+      inp.disabled = true;
+      if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+
+      function reEnable() {
+        inp.disabled = false;
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+        inp.focus();
+      }
+
+      try {
+        var result = handleFarmerVoiceQuestion(text);
+        // handleFarmerVoiceQuestion is async — wait for it
+        if (result && typeof result.then === 'function') {
+          result.then(reEnable).catch(reEnable);
+        } else {
+          // Sync fallback (original non-async version)
+          setTimeout(reEnable, 2000);
+        }
+      } catch (e) {
+        console.error('[kmSendText] Error:', e);
+        reEnable();
+      }
+    }
+  </script>
+  <!-- ──────────────────────────────────────────────────────────────────── -->
+
 </body>
 </html>
