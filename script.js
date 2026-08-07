@@ -1045,12 +1045,27 @@ const selectVisionModule = (moduleId) => {
 
 const clearVisionWorkspace = () => {
   appState.selectedSampleImage = null;
-  document.getElementById('image-preview-container').classList.add('hidden');
-  document.getElementById('upload-prompt').classList.remove('hidden');
-  document.getElementById('btn-analyze').disabled = true;
-  document.getElementById('vision-results-area').classList.add('hidden');
-  document.getElementById('vision-results-area').innerHTML = '';
-  document.getElementById('vision-file-input').value = '';
+  appState.selectedFile = null;
+  const uploadPanel = document.querySelector('.vision-upload-panel');
+  if (uploadPanel) uploadPanel.classList.remove('hidden');
+
+  const previewContainer = document.getElementById('image-preview-container');
+  if (previewContainer) previewContainer.classList.add('hidden');
+
+  const uploadPrompt = document.getElementById('upload-prompt');
+  if (uploadPrompt) uploadPrompt.classList.remove('hidden');
+
+  const btnAnalyze = document.getElementById('btn-analyze');
+  if (btnAnalyze) btnAnalyze.disabled = true;
+
+  const resultsArea = document.getElementById('vision-results-area');
+  if (resultsArea) {
+    resultsArea.classList.add('hidden');
+    resultsArea.innerHTML = '';
+  }
+
+  const fileInput = document.getElementById('vision-file-input');
+  if (fileInput) fileInput.value = '';
 };
 
 const populateSamplePills = (moduleId) => {
@@ -1162,6 +1177,7 @@ const setupUploadListeners = () => {
       document.getElementById('image-preview-container').classList.remove('hidden');
       btnAnalyze.disabled = false;
       appState.selectedSampleImage = file.name;
+      appState.selectedFile = file;
     };
     reader.readAsDataURL(file);
   };
@@ -1172,105 +1188,238 @@ const setupUploadListeners = () => {
 };
 
 // --------------------------------------------------------------------------
-// 9. SIMULATED AI ENGINE & MOCK FUNCTIONS
+// 9. REAL TENSORFLOW CNN VISION ENGINE & LOOKUP DATABASE
 // --------------------------------------------------------------------------
-const triggerSimulatedAIconst handleFarmerVoiceQuestion = async (questionText) => {
-  if (!questionText || !questionText.trim()) return;
-  const cleanQuestion = questionText.trim();
 
-  addChatMessage(cleanQuestion, 'user-message');
-  playSound('snd-chime');
+const DISEASE_DATABASE = {
+  "Pepper__bell___Bacterial_spot": {
+    name: "Pepper (Bell) Bacterial Spot",
+    symptoms: "Small, water-soaked dark spots on leaves that turn brown/black with yellow halos. Causes leaf drop and spotted fruit.",
+    organic: "Spray copper-based organic fungicides or Neem oil formulation (3000 ppm). Remove and destroy infected leaves.",
+    chemical: "Apply Copper Hydroxide mixed with Streptomycin sulphate per recommended dose.",
+    preventive: "Use disease-free seeds, practice 2-3 year crop rotation, and avoid overhead sprinkler irrigation."
+  },
+  "Pepper__bell___healthy": {
+    name: "Pepper (Bell) Healthy",
+    symptoms: "Leaves are vibrant green, free of spots, lesions, or curling. Normal canopy development.",
+    organic: "Maintain organic compost application and regular watering schedules.",
+    chemical: "No chemical treatment required for healthy crops.",
+    preventive: "Monitor weekly for early insect vectors and maintain proper soil moisture."
+  },
+  "Potato___Early_blight": {
+    name: "Potato Early Blight",
+    symptoms: "Concentric dark brown circular spots appearing first on older leaves, forming a target board pattern.",
+    organic: "Mulch soil surface with crop residue. Spray copper hydroxide or bio-pesticide Trichoderma.",
+    chemical: "Spray Mancozeb 75 WP at 2 grams per liter of water immediately.",
+    preventive: "Ensure crop rotation. Water roots directly instead of overhead leaf sprinkling."
+  },
+  "Potato___Late_blight": {
+    name: "Potato Late Blight",
+    symptoms: "Large, irregular water-soaked dark green to black spots on leaves and stems with white fungal growth on undersides during high humidity.",
+    organic: "Remove and destroy infected plants immediately. Apply bio-control agent Trichoderma harzianum.",
+    chemical: "Spray Metalaxyl 8% + Mancozeb 64% WP (2.5 g/L) or Cymoxanil + Mancozeb.",
+    preventive: "Avoid excessive nitrogen fertilizer, ensure high field drainage, and use certified disease-free seed tubers."
+  },
+  "Potato___healthy": {
+    name: "Potato Healthy",
+    symptoms: "Vivid green foliage, crisp leaf stems, no signs of blights or rot.",
+    organic: "Apply well-decomposed farmyard manure (FYM) or vermicompost.",
+    chemical: "No chemical sprays needed.",
+    preventive: "Maintain earthing up around plants and ensure proper water management."
+  },
+  "Tomato_Bacterial_spot": {
+    name: "Tomato Bacterial Spot",
+    symptoms: "Small, dark, water-soaked spots on leaves and fruit. Leaves turn yellow and drop prematurely.",
+    organic: "Spray copper soap or copper octanoate. Prune lower leaves touching wet soil.",
+    chemical: "Spray Copper Oxychloride 50 WP (3g/L) mixed with Streptocycline (0.1g/L).",
+    preventive: "Practice crop rotation with non-solanaceous crops and disinfect tools."
+  },
+  "Tomato_Early_blight": {
+    name: "Tomato Early Blight",
+    symptoms: "Dark brown target-like concentric rings on lower leaves, stem cankers, and fruit rot.",
+    organic: "Apply Trichoderma viride or Bacillus subtilis. Mulch with straw to prevent soil splash.",
+    chemical: "Spray Chlorothalonil 75 WP (2g/L) or Azoxystrobin 23% SC (1ml/L).",
+    preventive: "Space plants for proper air circulation and water early in the morning."
+  },
+  "Tomato_Late_blight": {
+    name: "Tomato Late Blight",
+    symptoms: "Pale green to dark brown oily leaf spots, rapid foliage destruction, and firm brown rot on fruit.",
+    organic: "Apply copper hydroxide spray. Remove infected foliage promptly.",
+    chemical: "Spray Dimethomorph 50% WP (1g/L) or Mancozeb 75 WP (2.5g/L).",
+    preventive: "Plant resistant varieties and avoid foliage wetness during cool wet conditions."
+  },
+  "Tomato_Leaf_Mold": {
+    name: "Tomato Leaf Mold",
+    symptoms: "Pale green to yellow spots on leaf uppersides with olive-green or grayish velvety mold on undersides.",
+    organic: "Spray copper fungicide or potassium bicarbonate solution. Improve greenhouse ventilation.",
+    chemical: "Spray Difenoconazole 25% EC (1ml/L) or Dithianon.",
+    preventive: "Keep relative humidity below 85% and stake/prune plants for high air movement."
+  },
+  "Tomato_Septoria_leaf_spot": {
+    name: "Tomato Septoria Leaf Spot",
+    symptoms: "Numerous small circular spots with dark brown margins and gray centers containing tiny black specks.",
+    organic: "Spray copper octanoate or neem-based bio-fungicides. Remove diseased lower leaves.",
+    chemical: "Spray Mancozeb 75 WP (2g/L) or Zineb 75 WP.",
+    preventive: "Eliminate solanaceous weeds and rotate crops every two seasons."
+  },
+  "Tomato_Spider_mites_Two_spotted_spider_mite": {
+    name: "Tomato Two-Spotted Spider Mite",
+    symptoms: "Yellow stippling/speckling on leaf surface, fine silky webbing on undersides, leaves bronzing and drying.",
+    organic: "Spray insecticidal soap, Neem oil (10,000 ppm), or release predatory mites (Phytoseiulus persimilis).",
+    chemical: "Spray Abamectin 1.9% EC (0.5ml/L) or Spiromesifen 22.9% SC (1ml/L).",
+    preventive: "Avoid dusty field conditions and keep foliage adequately hydrated."
+  },
+  "Tomato_Target_Spot": {
+    name: "Tomato Target Spot",
+    symptoms: "Pinpoint brown spots expanding into target-like brown lesions with light brown centers on leaves and stems.",
+    organic: "Apply compost tea or bio-fungicide Bacillus amyloliquefaciens.",
+    chemical: "Spray Pyraclostrobin 20% WG or Difenoconazole + Azoxystrobin.",
+    preventive: "Maintain weed-free field borders and avoid overhead irrigation."
+  },
+  "Tomato_Tomato_YellowLeaf_Curl_Virus": {
+    name: "Tomato Yellow Leaf Curl Virus (TYLCV)",
+    symptoms: "Severe leaf curling (upward/inward), yellowing of leaf margins, extreme plant stunting, flower drop.",
+    organic: "Install yellow sticky traps (15 traps/acre) to catch whiteflies. Cover beds with reflective mulch.",
+    chemical: "Spray Imidacloprid 17.8 SL (0.5ml/L) or Thiamethoxam 25 WG (0.3g/L) to control whitefly vector.",
+    preventive: "Use insect-proof net nurseries and grow TYLCV resistant hybrids."
+  },
+  "Tomato_Tomato_mosaic_virus": {
+    name: "Tomato Mosaic Virus (ToMV)",
+    symptoms: "Mottled light and dark green mosaic patterns on leaves, leaf distortion, fern-like leaf thinning.",
+    organic: "Dip hands and tools in skim milk solution during pruning to deactivate mechanical transmission.",
+    chemical: "No direct chemical cure for viral infection. Control sap-sucking insects.",
+    preventive: "Use certified virus-free seeds and strictly disinfect hands/tools."
+  },
+  "Tomato_healthy": {
+    name: "Tomato Healthy",
+    symptoms: "Lush green leaves, strong erect stems, abundant healthy flower clusters and fruit.",
+    organic: "Apply balanced vermicompost and bio-fertilizer microbial cultures.",
+    chemical: "No chemical applications required.",
+    preventive: "Maintain regular irrigation intervals and monitor crop weekly."
+  }
+};
 
-  const micBtn = document.getElementById('btn-microphone');
-  if (micBtn) { micBtn.disabled = true; micBtn.style.opacity = '0.5'; }
+const triggerSimulatedAIAnalysis = async () => {
+  const loading = document.getElementById('analysis-loading');
+  const resultsArea = document.getElementById('vision-results-area');
+  const uploadPanel = document.querySelector('.vision-upload-panel');
+  const previewImg = document.getElementById('image-preview');
+  const mod = appState.activeVisionModule || 'disease';
 
-  // Show thinking indicator in chat
-  const THINKING_ID = 'km-thinking-bubble';
-  let existing = document.getElementById(THINKING_ID);
-  if (existing) existing.remove();
-
-  const box = document.getElementById('chat-messages-box');
-  let bubble = null;
-  if (box) {
-    bubble = document.createElement('div');
-    bubble.id = THINKING_ID;
-    bubble.className = 'chat-bubble bot-message km-thinking';
-    bubble.innerHTML = `
-      <p style="display:flex;align-items:center;gap:8px;">
-        <span class="km-dots"><span>.</span><span>.</span><span>.</span></span>
-        <span>KrishiMitra AI is thinking (Gemma 3)...</span>
-      </p>
-    `;
-    box.appendChild(bubble);
-    box.scrollTop = box.scrollHeight;
+  if (mod !== 'disease') {
+    if (loading) loading.classList.remove('hidden');
+    if (uploadPanel) uploadPanel.classList.add('hidden');
+    setTimeout(() => {
+      if (loading) loading.classList.add('hidden');
+      let res = null;
+      const sampleName = appState.selectedSampleImage || 'default';
+      const sampleImg = previewImg ? previewImg.src : '';
+      if (mod === 'soil') res = mockAnalyzeSoil(sampleName, sampleImg);
+      else if (mod === 'growth') res = mockAnalyzeGrowth(sampleName, sampleImg);
+      if (resultsArea && res) {
+        renderVisionResults(res);
+        resultsArea.classList.remove('hidden');
+      }
+    }, 1500);
+    return;
   }
 
-  try {
-    let responseText = "";
-    const apiBase = (window.KrishiMitraConfig && window.KrishiMitraConfig.API_BASE_URL) || 'http://localhost:5000/api';
-    const lang = (window.appState && window.appState.currentLanguage) || 'en';
+  // Real TensorFlow CNN Inference via POST /api/vision
+  if (loading) loading.classList.remove('hidden');
+  if (uploadPanel) uploadPanel.classList.add('hidden');
+  if (resultsArea) resultsArea.classList.add('hidden');
 
-    const res = await fetch(`${apiBase}/chat`, {
+  try {
+    let imageFile = appState.selectedFile;
+    if (!imageFile && previewImg && previewImg.src) {
+      const blobRes = await fetch(previewImg.src);
+      const blob = await blobRes.blob();
+      imageFile = new File([blob], 'crop_scan.jpg', { type: blob.type || 'image/jpeg' });
+    }
+
+    if (!imageFile) {
+      throw new Error('No crop image file selected.');
+    }
+
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    const apiBase = (window.KrishiMitraConfig && window.KrishiMitraConfig.API_BASE_URL) || 'http://localhost:5000/api';
+    const endpoint = apiBase.endsWith('/api') ? `${apiBase}/vision` : `${apiBase}/api/vision`;
+
+    const res = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: cleanQuestion,
-        language: lang
-      })
+      body: formData
     });
 
     const data = await res.json();
 
-    if (bubble) bubble.remove();
-
-    if (res.ok && data.success && data.reply) {
-      responseText = data.reply;
-    } else {
-      responseText = data.userError || "Offline AI is unavailable. Please start Ollama.";
+    if (!res.ok || !data || !data.success) {
+      throw new Error(data?.error || 'Crop disease analysis failed.');
     }
 
-    addChatMessage(responseText, 'bot-message');
-    playSound('snd-success');
-    speakAloud(responseText);
+    const diseaseLabel = data.disease;
+    const confValue = parseFloat(data.confidence) || 0;
+
+    // Calculate Severity per prompt rules:
+    // >=90: Very High, 80-89: High, 60-79: Medium, <60: Low
+    let severityText = "Low";
+    let severityType = "green";
+    if (confValue >= 90) {
+      severityText = "Very High";
+      severityType = "red";
+    } else if (confValue >= 80) {
+      severityText = "High";
+      severityType = "red";
+    } else if (confValue >= 60) {
+      severityText = "Medium";
+      severityType = "yellow";
+    } else {
+      severityText = "Low";
+      severityType = "green";
+    }
+
+    // Lookup Disease Info from Local Database
+    const diseaseInfo = DISEASE_DATABASE[diseaseLabel] || {
+      name: diseaseLabel.replace(/___/g, ' - ').replace(/_/g, ' '),
+      symptoms: "Foliage exhibits spots, discoloration, or structural changes typical of plant infection.",
+      organic: "Apply bio-fungicide Trichoderma viride or neem oil spray (3000 ppm).",
+      chemical: "Apply broad-spectrum copper fungicide or Mancozeb 75 WP at recommended dose.",
+      preventive: "Ensure field sanitation, balanced fertilization, and proper crop rotation."
+    };
+
+    const report = {
+      id: "REP-" + Date.now().toString().slice(-6),
+      type: "Leaf Disease Scan (TensorFlow CNN)",
+      date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      img: previewImg ? previewImg.src : (data.imagePath || ''),
+      details: [
+        { label: "Detected Disease", value: diseaseInfo.name, isAccent: true, type: "red" },
+        { label: "AI Confidence Score", value: confValue.toFixed(1) + "%", type: "green" },
+        { label: "Severity Level", value: severityText, type: severityType },
+        { label: "Observed Symptoms", value: diseaseInfo.symptoms, type: "info" }
+      ],
+      recommendations: [
+        { title: "Organic Treatment (जैविक समाधान)", text: diseaseInfo.organic },
+        { title: "Chemical Treatment (रासायनिक उपाय)", text: diseaseInfo.chemical },
+        { title: "Preventive Measures (बचाव कार्य)", text: diseaseInfo.preventive }
+      ]
+    };
+
+    appState.reportsHistory.unshift(report);
+
+    if (loading) loading.classList.add('hidden');
+    if (resultsArea) {
+      renderVisionResults(report);
+      resultsArea.classList.remove('hidden');
+    }
 
   } catch (err) {
-    if (bubble) bubble.remove();
-    console.error("Chat error:", err);
-    addChatMessage("Backend server is not running. Please start it with: npm start", 'bot-message');
-  } finally {
-    if (micBtn) { micBtn.disabled = false; micBtn.style.opacity = '1'; }
+    console.error('[Vision UI Error]:', err);
+    if (loading) loading.classList.add('hidden');
+    if (uploadPanel) uploadPanel.classList.remove('hidden');
+    alert(`Crop Scan Error: ${err.message}`);
   }
-};��गेती झुलसा रोग)";
-    confidence = "91%";
-    severity = "Medium-Low (हल्का)";
-    symptoms = "Concentric dark brown circular spots appearing first on older leaves, forming a target board pattern.";
-    organic = "Mulch soil surface with crop residue. Spray copper hydroxide or bio-pesticide Trichoderma.";
-    chemical = "Spray Mancozeb 75 WP at 2 grams per liter of water immediately.";
-    preventive = "Ensure crop rotation. Water roots directly instead of overhead leaf sprinkling.";
-    outbreak = "No outbreaks reported within 5km radius.";
-  }
-
-  return {
-    id: "REP-" + Date.now().toString().slice(-6),
-    type: "Leaf Disease Scan",
-    date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-    img: img,
-    details: [
-      { label: "Detected Disease", value: disease, isAccent: true, type: "red" },
-      { label: "Severity Level", value: severity, type: "yellow" },
-      { label: "AI Confidence Score", value: confidence, type: "green" },
-      { label: "Observed Symptoms", value: symptoms, type: "info" }
-    ],
-    recommendations: [
-      { title: "Organic Treatment (जैविक समाधान)", text: organic },
-      { title: "Chemical Treatment (रासायनिक उपाय)", text: chemical },
-      { title: "Preventive Measures (बचाव कार्य)", text: preventive }
-    ],
-    extraInfo: {
-      title: "Outbreak Indicator",
-      text: outbreak
-    }
-  };
 };
 
 // Mock soil analyzer
@@ -1567,43 +1716,15 @@ const setupVoiceAssistant = () => {
   });
 };
 
-const handleFarmerVoiceQuestion = (questionText) => {
-  addChatMessage(questionText, 'user-message');
-  playSound('snd-chime');
-
-  // Core parsing response simulator
-  setTimeout(() => {
-    let responseText = "I heard you ask: \"" + questionText + "\". I am querying KrishiMitra database...";
-    let lowerQ = questionText.toLowerCase();
-
-    if (lowerQ.includes('wheat') || lowerQ.includes('गेहूं') || lowerQ.includes('ઘઉં') || lowerQ.includes('गहू') || lowerQ.includes('ਕਣਕ')) {
-      const w = MANDI_DB.wheat;
-      responseText = `The highest price for Wheat (Lokwan) is ₹${w.highest}/Qtl at ${w.highestMandi}. The lowest price is ₹${w.lowest}/Qtl at ${w.lowestMandi}. ${w.recommendation}`;
-    } else if (lowerQ.includes('paddy') || lowerQ.includes('rice') || lowerQ.includes('धान') || lowerQ.includes('ડાંગਰ') || lowerQ.includes('तांदूळ') || lowerQ.includes('ਝੋਨਾ')) {
-      const p = MANDI_DB.paddy;
-      responseText = `Rice Paddy prices today: Highest is ₹${p.highest}/Qtl in ${p.highestMandi}. Lowest is ₹${p.lowest}/Qtl in ${p.lowestMandi}. ${p.recommendation}`;
-    } else if (lowerQ.includes('tomato') || lowerQ.includes('टमाटर') || lowerQ.includes('ટમેટા') || lowerQ.includes('टोमॅटो') || lowerQ.includes('ਟਮਾਟਰ')) {
-      const t = MANDI_DB.tomato;
-      responseText = `Tomatoes are selling at an excellent rate today! Highest is ₹${t.highest}/Qtl in ${t.highestMandi}. Lowest is ₹${t.lowest}/Qtl.`;
-    } else if (lowerQ.includes('weather') || lowerQ.includes('rain') || lowerQ.includes('मौसम') || lowerQ.includes('વરસાદ') || lowerQ.includes('पाऊस') || lowerQ.includes('ਮੀਂਹ')) {
-      responseText = `Today is 29°C with Light Rain (80% probability). AI Crop Advisory: Rain is expected, so postpone spraying nitrogen/urea fertilizer or pesticides today.`;
-    } else if (lowerQ.includes('kusum') || lowerQ.includes('kusum') || lowerQ.includes('कुसुम')) {
-      responseText = `Under PM Kusum Yojana, you can get a 60% government subsidy to install Solar water pumps. Required documents: Land Jamabandi ownership papers, borewell certification, and Aadhaar card.`;
-    } else if (lowerQ.includes('disease') || lowerQ.includes('spots') || lowerQ.includes('रोग') || lowerQ.includes('બીમારી')) {
-      responseText = `If your leaves have brown spots, it could be Rice Blast. Switch to the 'Vision Lab' tab, upload a picture, and our AI scanner will diagnose it immediately and give organic and chemical treatments.`;
-    } else if (lowerQ.includes('soil') || lowerQ.includes('मिट्टी') || lowerQ.includes('માટી') || lowerQ.includes('ਮਿੱਟੀ')) {
-      responseText = `For Alluvial Soil, we recommend growing Wheat, Paddy, and Potato crops. Use organic compost (gobhar khad) to improve low organic carbon levels. Check Vision Lab to analyze soil images.`;
-    } else if (lowerQ.includes('kisan') || lowerQ.includes('सम्मान') || lowerQ.includes('ਸੰਮਾਨ')) {
-      responseText = `PM Kisan Samman Nidhi gives ₹6,000 yearly income support directly into farmers' bank accounts. Link your Aadhaar card with your bank to receive installments.`;
-    }
-
-    addChatMessage(responseText, 'bot-message');
-    playSound('snd-success');
-
-    // Read the bot response aloud using SpeechSynthesis (Assistive Technology!)
-    speakAloud(responseText);
-  }, 1000);
+var handleFarmerVoiceQuestion = function (questionText) {
+  if (typeof window.handleFarmerVoiceQuestion === 'function' && window.handleFarmerVoiceQuestion !== handleFarmerVoiceQuestion) {
+    return window.handleFarmerVoiceQuestion(questionText);
+  }
+  if (window.KrishiMitraGemma && typeof window.KrishiMitraGemma.ask === 'function') {
+    return window.KrishiMitraGemma.ask(questionText);
+  }
 };
+window.handleFarmerVoiceQuestion = handleFarmerVoiceQuestion;
 
 const askPresetQuestion = (txt) => {
   // Strip quotation marks
@@ -3318,3 +3439,44 @@ const setupWeatherPage = async () => {
     triggerWeatherRefresh();
   }, 900000);
 };
+
+
+// --------------------------------------------------------------------------
+// EXPOSE GLOBAL HANDLERS TO WINDOW (For HTML inline onclick compatibility)
+// --------------------------------------------------------------------------
+if (typeof switchTab !== 'undefined') window.switchTab = switchTab;
+if (typeof selectVisionModule !== 'undefined') window.selectVisionModule = selectVisionModule;
+if (typeof clearVisionWorkspace !== 'undefined') window.clearVisionWorkspace = clearVisionWorkspace;
+if (typeof populateSamplePills !== 'undefined') window.populateSamplePills = populateSamplePills;
+if (typeof triggerSimulatedAIAnalysis !== 'undefined') window.triggerSimulatedAIAnalysis = triggerSimulatedAIAnalysis;
+if (typeof mockAnalyzeDisease !== 'undefined') window.mockAnalyzeDisease = mockAnalyzeDisease;
+if (typeof mockAnalyzeSoil !== 'undefined') window.mockAnalyzeSoil = mockAnalyzeSoil;
+if (typeof mockAnalyzeGrowth !== 'undefined') window.mockAnalyzeGrowth = mockAnalyzeGrowth;
+if (typeof mockGradeProduce !== 'undefined') window.mockGradeProduce = mockGradeProduce;
+if (typeof mockInsuranceReport !== 'undefined') window.mockInsuranceReport = mockInsuranceReport;
+if (typeof renderVisionResults !== 'undefined') window.renderVisionResults = renderVisionResults;
+if (typeof askPresetQuestion !== 'undefined') window.askPresetQuestion = askPresetQuestion;
+if (typeof speakAloud !== 'undefined') window.speakAloud = speakAloud;
+if (typeof addChatMessage !== 'undefined') window.addChatMessage = addChatMessage;
+if (typeof loadCropPriceDetails !== 'undefined') window.loadCropPriceDetails = loadCropPriceDetails;
+if (typeof renderMarketBars !== 'undefined') window.renderMarketBars = renderMarketBars;
+if (typeof renderMandiList !== 'undefined') window.renderMandiList = renderMandiList;
+if (typeof checkFarmerEligibility !== 'undefined') window.checkFarmerEligibility = checkFarmerEligibility;
+if (typeof applyAllFilters !== 'undefined') window.applyAllFilters = applyAllFilters;
+if (typeof filterSchemesCategory !== 'undefined') window.filterSchemesCategory = filterSchemesCategory;
+if (typeof clearSchemeSearch !== 'undefined') window.clearSchemeSearch = clearSchemeSearch;
+if (typeof clearAllFilters !== 'undefined') window.clearAllFilters = clearAllFilters;
+if (typeof viewSchemeFromBadge !== 'undefined') window.viewSchemeFromBadge = viewSchemeFromBadge;
+if (typeof shareScheme !== 'undefined') window.shareScheme = shareScheme;
+if (typeof renderSchemes !== 'undefined') window.renderSchemes = renderSchemes;
+if (typeof toggleBookmark !== 'undefined') window.toggleBookmark = toggleBookmark;
+if (typeof openSchemeModal !== 'undefined') window.openSchemeModal = openSchemeModal;
+if (typeof closeSchemeModal !== 'undefined') window.closeSchemeModal = closeSchemeModal;
+if (typeof simulateApplyFlow !== 'undefined') window.simulateApplyFlow = simulateApplyFlow;
+if (typeof openReportModalByIndex !== 'undefined') window.openReportModalByIndex = openReportModalByIndex;
+if (typeof closeReportModal !== 'undefined') window.closeReportModal = closeReportModal;
+if (typeof triggerGeolocation !== 'undefined') window.triggerGeolocation = triggerGeolocation;
+if (typeof triggerManualWeatherSearch !== 'undefined') window.triggerManualWeatherSearch = triggerManualWeatherSearch;
+if (typeof triggerWeatherRefresh !== 'undefined') window.triggerWeatherRefresh = triggerWeatherRefresh;
+if (typeof triggerCropAdvisory !== 'undefined') window.triggerCropAdvisory = triggerCropAdvisory;
+if (typeof playSound !== 'undefined') window.playSound = playSound;

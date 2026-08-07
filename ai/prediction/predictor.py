@@ -14,17 +14,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "plant_disease_model.keras")
 LABELS_PATH = os.path.join(BASE_DIR, "models", "labels.json")
 
-print("Inference started...")
-print("Model Path :", MODEL_PATH)
-print("Labels Path:", LABELS_PATH)
-print("Labels file exists:", os.path.exists(LABELS_PATH))
-print("Labels file size:", os.path.getsize(LABELS_PATH))
 
 # Load model
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # Load labels
-print("Opening:", LABELS_PATH)
+
 
 with open(LABELS_PATH, "r", encoding="utf-8-sig") as file:
     class_labels = json.load(file)

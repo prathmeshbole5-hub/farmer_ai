@@ -31,6 +31,8 @@ dataset/
 # Outputs & Temporary Logs
 ai/outputs/
 *.log
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # OS & IDE Files
 .DS_Store

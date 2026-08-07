@@ -167,6 +167,61 @@
     }
 
     // ── Core: send question to Gemma backend ───────────────────────────────
+    // ── Direct local Ollama fallback ───────────────────────────────────────
+    async function askOllamaDirect(questionText, language) {
+      language = language || ((window.appState && window.appState.currentLanguage) || 'en');
+      const SYSTEM_PROMPT = `You are KrishiMitra AI. You are an agricultural assistant for farmers. Only answer agriculture, crop, soil, weather, farming, or farm scheme questions. Keep responses simple and practical. Use numbered steps whenever possible.`;
+      
+      const langInstructions = {
+        en: 'Reply in simple English.',
+        hi: 'Reply in Hindi (हिंदी में उत्तर दें).',
+        gu: 'Reply in Gujarati (ગુજરાતીમાં જવાબ આપો).',
+        mr: 'Reply in Marathi (मराठीत उत्तर द्या).',
+        pa: 'Reply in Punjabi (ਪੰਜਾਬੀ ਵਿੱਚ ਜਵਾਬ ਦਿਓ).'
+      };
+      const langInstruction = langInstructions[language] || langInstructions.en;
+
+      const parts = [SYSTEM_PROMPT, langInstruction];
+      const history = conversationHistory.slice(-cfg.CONVERSATION_HISTORY_LIMIT * 2);
+      if (history.length > 0) {
+        parts.push('\nCONVERSATION HISTORY:');
+        history.forEach(turn => {
+          parts.push(turn.role === 'user' ? `Farmer: ${turn.content}` : `KrishiMitra: ${turn.content}`);
+        });
+      }
+      parts.push(`\nFarmer: ${questionText}\nKrishiMitra:`);
+      const prompt = parts.join('\n');
+
+      const ollamaUrl = cfg.OLLAMA_BASE_URL || 'http://localhost:11434';
+      const model = cfg.OLLAMA_MODEL || 'gemma3';
+
+      logEntry('INFO', `Calling local Ollama directly at ${ollamaUrl}...`);
+      const res = await fetchWithTimeout(
+        `${ollamaUrl}/api/generate`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: model,
+            prompt: prompt,
+            stream: false,
+            options: { temperature: 0.7 }
+          })
+        },
+        cfg.CHAT_TIMEOUT_MS
+      );
+
+      if (!res.ok) {
+        throw new Error(`Ollama HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      if (data && data.response && data.response.trim()) {
+        return data.response.trim();
+      }
+      throw new Error('Ollama returned empty response.');
+    }
+
     /**
      * Send a farmer's question to POST /api/chat, get Gemma's reply.
      *
@@ -204,18 +259,13 @@
           cfg.CHAT_TIMEOUT_MS
         );
       } catch (fetchErr) {
-        const isTimeout  = fetchErr.name === 'AbortError';
-        const isOffline  = fetchErr.message && (
-          fetchErr.message.includes('Failed to fetch') ||
-          fetchErr.message.includes('NetworkError') ||
-          fetchErr.message.includes('ERR_CONNECTION_REFUSED')
-        );
-
-        logEntry('ERROR', 'Fetch failed', { error: fetchErr.message });
-
-        if (isTimeout) throw new Error(cfg.ERROR_GENERIC);
-        if (isOffline) throw new Error(cfg.ERROR_BACKEND_OFFLINE);
-        throw new Error(cfg.ERROR_GENERIC);
+        logEntry('WARN', 'Backend endpoint fetch failed, trying direct Ollama local server...', { error: fetchErr.message });
+        try {
+          return await askOllamaDirect(questionText, language);
+        } catch (directErr) {
+          logEntry('ERROR', 'Direct Ollama call also failed', { error: directErr.message });
+          throw new Error('Offline AI is unavailable. Please start Ollama (ollama serve).');
+        }
       }
 
       const inferenceMs = Date.now() - startTime;
@@ -224,16 +274,24 @@
       try {
         data = await res.json();
       } catch {
-        throw new Error(cfg.ERROR_GENERIC);
+        try {
+          return await askOllamaDirect(questionText, language);
+        } catch {
+          throw new Error(cfg.ERROR_GENERIC);
+        }
       }
 
       if (!res.ok || !data.success) {
-        const userMsg = data.userError || errorCodeToMessage(data.errorCode);
-        logEntry('WARN', `Backend error: ${data.errorCode}`, {
-          error:     data.error,
-          inferenceMs
-        });
-        throw new Error(userMsg);
+        try {
+          return await askOllamaDirect(questionText, language);
+        } catch {
+          const userMsg = data.userError || errorCodeToMessage(data.errorCode);
+          logEntry('WARN', `Backend error: ${data.errorCode}`, {
+            error:     data.error,
+            inferenceMs
+          });
+          throw new Error(userMsg);
+        }
       }
 
       logEntry('INFO', `Gemma replied in ${data.inferenceMs || inferenceMs}ms`, {

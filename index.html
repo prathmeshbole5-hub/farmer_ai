@@ -936,7 +936,8 @@
       }
 
       try {
-        var result = handleFarmerVoiceQuestion(text);
+        var handler = window.handleFarmerVoiceQuestion || handleFarmerVoiceQuestion;
+        var result = handler(text);
         // handleFarmerVoiceQuestion is async — wait for it
         if (result && typeof result.then === 'function') {
           result.then(reEnable).catch(reEnable);
