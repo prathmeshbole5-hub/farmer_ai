@@ -2322,9 +2322,7 @@ const renderSchemes = (filter = 'all') => {
 // 12a. GEMINI AI CLIENT & FUNCTIONS
 // --------------------------------------------------------------------------
 const callGeminiAPI = async (prompt) => {
-  const API_KEY_PART1 = "AQ.Ab8RN6KrB6Pj2xSy";
-  const API_KEY_PART2 = "_xqLVqGMOzy6dtC_nPAGC6NpIOkQSC3A2Q";
-  const API_KEY = API_KEY_PART1 + API_KEY_PART2;
+  const API_KEY = CONFIG.GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
   
   try {
@@ -3480,3 +3478,4 @@ if (typeof triggerManualWeatherSearch !== 'undefined') window.triggerManualWeath
 if (typeof triggerWeatherRefresh !== 'undefined') window.triggerWeatherRefresh = triggerWeatherRefresh;
 if (typeof triggerCropAdvisory !== 'undefined') window.triggerCropAdvisory = triggerCropAdvisory;
 if (typeof playSound !== 'undefined') window.playSound = playSound;
+if (typeof i18n !== 'undefined') window.i18n = i18n;
