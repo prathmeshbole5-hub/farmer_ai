@@ -1299,6 +1299,44 @@ const DISEASE_DATABASE = {
   }
 };
 
+const SOIL_DATABASE = {
+  "Alluvial_Soil": {
+    name: "Alluvial Soil (दोमट मिट्टी)",
+    crops: "Wheat, Paddy, Sugarcane, Potato, Chickpea, Oilseeds",
+    advisory: "Alluvial soil is highly fertile but can be nitrogen deficient. Apply well-decomposed organic manure and balanced NPK fertilizer (ratio 4:2:1)."
+  },
+  "Arid_Soil": {
+    name: "Arid / Desert Soil (बलुई मिट्टी)",
+    crops: "Bajra, Millet, Barley, Guar, Mustard",
+    advisory: "Low water retention and organic content. Practice drip irrigation, apply gypsum to reduce alkalinity if saline, and use green manure to build organic carbon."
+  },
+  "Black_Soil": {
+    name: "Black Soil (काली मिट्टी)",
+    crops: "Cotton, Soybean, Wheat, Pigeon Pea, Citrus Fruits",
+    advisory: "Excellent moisture retention but prone to waterlogging. Ensure deep tillage and drainage. Add zinc sulphate (10kg/acre) to enhance cotton yield."
+  },
+  "Laterite_Soil": {
+    name: "Laterite Soil (लैटेराइट मिट्टी)",
+    crops: "Tea, Coffee, Cashew nuts, Rubber, Coconut",
+    advisory: "Highly acidic and low in phosphate. Apply lime (calcium carbonate) to neutralize soil acidity, and add rock phosphate to improve soil nutrients."
+  },
+  "Mountain_Soil": {
+    name: "Mountain Soil (पहाड़ी मिट्टी)",
+    crops: "Apple, Tea, Spices, Maize, Wheat, Barley",
+    advisory: "Highly organic but vulnerable to erosion. Practice terrace farming, apply organic compost, and avoid excessive chemical fertilizers."
+  },
+  "Red_Soil": {
+    name: "Red Soil (लाल मिट्टी)",
+    crops: "Groundnut, Millets, Rice, Ragi, Pulses, Tobacco",
+    advisory: "Low moisture retention and deficient in nitrogen and phosphate. Apply organic compost (gobhar khad) and superphosphate to boost nutrient levels."
+  },
+  "Yellow_Soil": {
+    name: "Yellow Soil (पीली मिट्टी)",
+    crops: "Rice, Wheat, Oilseeds, Groundnut, Pulses",
+    advisory: "Formed due to hydration of iron oxides in red soil. Deficient in nitrogen, phosphorus, and organic matter. Apply organic manure and DAP fertilizer."
+  }
+};
+
 const triggerSimulatedAIAnalysis = async () => {
   const loading = document.getElementById('analysis-loading');
   const resultsArea = document.getElementById('vision-results-area');
@@ -1306,7 +1344,7 @@ const triggerSimulatedAIAnalysis = async () => {
   const previewImg = document.getElementById('image-preview');
   const mod = appState.activeVisionModule || 'disease';
 
-  if (mod !== 'disease') {
+  if (mod !== 'disease' && mod !== 'soil') {
     if (loading) loading.classList.remove('hidden');
     if (uploadPanel) uploadPanel.classList.add('hidden');
     setTimeout(() => {
@@ -1314,8 +1352,7 @@ const triggerSimulatedAIAnalysis = async () => {
       let res = null;
       const sampleName = appState.selectedSampleImage || 'default';
       const sampleImg = previewImg ? previewImg.src : '';
-      if (mod === 'soil') res = mockAnalyzeSoil(sampleName, sampleImg);
-      else if (mod === 'growth') res = mockAnalyzeGrowth(sampleName, sampleImg);
+      if (mod === 'growth') res = mockAnalyzeGrowth(sampleName, sampleImg);
       if (resultsArea && res) {
         renderVisionResults(res);
         resultsArea.classList.remove('hidden');
@@ -1338,7 +1375,7 @@ const triggerSimulatedAIAnalysis = async () => {
     }
 
     if (!imageFile) {
-      throw new Error('No crop image file selected.');
+      throw new Error('No agricultural image file selected.');
     }
 
     const formData = new FormData();
@@ -1355,56 +1392,86 @@ const triggerSimulatedAIAnalysis = async () => {
     const data = await res.json();
 
     if (!res.ok || !data || !data.success) {
-      throw new Error(data?.error || 'Crop disease analysis failed.');
+      throw new Error(data?.error || 'KrishiMitra AI analysis failed.');
     }
 
-    const diseaseLabel = data.disease;
+    const label = data.disease;
     const confValue = parseFloat(data.confidence) || 0;
 
-    // Calculate Severity per prompt rules:
-    // >=90: Very High, 80-89: High, 60-79: Medium, <60: Low
-    let severityText = "Low";
-    let severityType = "green";
-    if (confValue >= 90) {
-      severityText = "Very High";
-      severityType = "red";
-    } else if (confValue >= 80) {
-      severityText = "High";
-      severityType = "red";
-    } else if (confValue >= 60) {
-      severityText = "Medium";
-      severityType = "yellow";
+    let report;
+    if (mod === 'soil') {
+      const soilInfo = SOIL_DATABASE[label] || {
+        name: label.replace(/_/g, ' '),
+        crops: "Suitable for local region crops.",
+        advisory: "Apply organic compost to improve soil health."
+      };
+
+      let probsText = "";
+      if (data.probabilities) {
+        probsText = Object.entries(data.probabilities)
+          .map(([cls, prob]) => `${cls.replace(/_/g, ' ')}: ${prob.toFixed(1)}%`)
+          .join(', ');
+      }
+
+      report = {
+        id: "SOIL-" + Date.now().toString().slice(-6),
+        type: "Soil Analysis Test (TensorFlow CNN)",
+        date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+        img: previewImg ? previewImg.src : (data.imagePath || ''),
+        details: [
+          { label: "Soil Type", value: soilInfo.name, isAccent: true, type: "green" },
+          { label: "AI Confidence Score", value: confValue.toFixed(1) + "%", type: "green" },
+          { label: "Class Probabilities", value: probsText || "N/A", type: "info" }
+        ],
+        recommendations: [
+          { title: "Recommended Crops (उपयुक्त फसलें)", text: soilInfo.crops },
+          { title: "Nutrient / Fertilizer Advisory (उर्वरक सलाह)", text: soilInfo.advisory }
+        ]
+      };
     } else {
-      severityText = "Low";
-      severityType = "green";
+      // Calculate Severity for disease scanner:
+      let severityText = "Low";
+      let severityType = "green";
+      if (confValue >= 90) {
+        severityText = "Very High";
+        severityType = "red";
+      } else if (confValue >= 80) {
+        severityText = "High";
+        severityType = "red";
+      } else if (confValue >= 60) {
+        severityText = "Medium";
+        severityType = "yellow";
+      } else {
+        severityText = "Low";
+        severityType = "green";
+      }
+
+      const diseaseInfo = DISEASE_DATABASE[label] || {
+        name: label.replace(/___/g, ' - ').replace(/_/g, ' '),
+        symptoms: "Foliage exhibits spots, discoloration, or structural changes typical of plant infection.",
+        organic: "Apply bio-fungicide Trichoderma viride or neem oil spray (3000 ppm).",
+        chemical: "Apply broad-spectrum copper fungicide or Mancozeb 75 WP at recommended dose.",
+        preventive: "Ensure field sanitation, balanced fertilization, and proper crop rotation."
+      };
+
+      report = {
+        id: "REP-" + Date.now().toString().slice(-6),
+        type: "Leaf Disease Scan (TensorFlow CNN)",
+        date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+        img: previewImg ? previewImg.src : (data.imagePath || ''),
+        details: [
+          { label: "Detected Disease", value: diseaseInfo.name, isAccent: true, type: "red" },
+          { label: "AI Confidence Score", value: confValue.toFixed(1) + "%", type: "green" },
+          { label: "Severity Level", value: severityText, type: severityType },
+          { label: "Observed Symptoms", value: diseaseInfo.symptoms, type: "info" }
+        ],
+        recommendations: [
+          { title: "Organic Treatment (जैविक समाधान)", text: diseaseInfo.organic },
+          { title: "Chemical Treatment (रासायनिक उपाय)", text: diseaseInfo.chemical },
+          { title: "Preventive Measures (बचाव कार्य)", text: diseaseInfo.preventive }
+        ]
+      };
     }
-
-    // Lookup Disease Info from Local Database
-    const diseaseInfo = DISEASE_DATABASE[diseaseLabel] || {
-      name: diseaseLabel.replace(/___/g, ' - ').replace(/_/g, ' '),
-      symptoms: "Foliage exhibits spots, discoloration, or structural changes typical of plant infection.",
-      organic: "Apply bio-fungicide Trichoderma viride or neem oil spray (3000 ppm).",
-      chemical: "Apply broad-spectrum copper fungicide or Mancozeb 75 WP at recommended dose.",
-      preventive: "Ensure field sanitation, balanced fertilization, and proper crop rotation."
-    };
-
-    const report = {
-      id: "REP-" + Date.now().toString().slice(-6),
-      type: "Leaf Disease Scan (TensorFlow CNN)",
-      date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-      img: previewImg ? previewImg.src : (data.imagePath || ''),
-      details: [
-        { label: "Detected Disease", value: diseaseInfo.name, isAccent: true, type: "red" },
-        { label: "AI Confidence Score", value: confValue.toFixed(1) + "%", type: "green" },
-        { label: "Severity Level", value: severityText, type: severityType },
-        { label: "Observed Symptoms", value: diseaseInfo.symptoms, type: "info" }
-      ],
-      recommendations: [
-        { title: "Organic Treatment (जैविक समाधान)", text: diseaseInfo.organic },
-        { title: "Chemical Treatment (रासायनिक उपाय)", text: diseaseInfo.chemical },
-        { title: "Preventive Measures (बचाव कार्य)", text: diseaseInfo.preventive }
-      ]
-    };
 
     appState.reportsHistory.unshift(report);
 
@@ -1418,7 +1485,7 @@ const triggerSimulatedAIAnalysis = async () => {
     console.error('[Vision UI Error]:', err);
     if (loading) loading.classList.add('hidden');
     if (uploadPanel) uploadPanel.classList.remove('hidden');
-    alert(`Crop Scan Error: ${err.message}`);
+    alert(`AI Scan Error: ${err.message}`);
   }
 };
 

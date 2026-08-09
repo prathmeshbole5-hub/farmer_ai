@@ -53,7 +53,9 @@ router.post('/', upload.single('image'), async (req, res, next) => {
     return res.json({
       success: true,
       disease: result.disease,
+      soil: result.soil,
       confidence: result.confidence,
+      probabilities: result.probabilities,
       imagePath: `/uploads/${req.file.filename}`
     });
 
