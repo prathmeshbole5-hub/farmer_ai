@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KrishiMitra Voice Call Test — Developer Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0F9D58;
+      --primary-dark: #0B7541;
+      --voice-purple: #7b2d9e;
+      --bg-dark: #121212;
+      --card-bg: #1e1e1e;
+      --text: #e0e0e0;
+      --border: #333;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 28px 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .badge {
+      background: var(--voice-purple);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 6px;
+    }
+
+    /* Status Box */
+    .status-card {
+      background: #282828;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+      border: 1px solid #3a3a3a;
+      transition: all 0.3s ease;
+    }
+
+    .status-label {
+      font-size: 0.8rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .status-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #4caf50;
+    }
+
+    .status-value.listening { color: #f44336; animation: pulse 1.5s infinite; }
+    .status-value.processing { color: #2196f3; }
+    .status-value.speaking { color: #9c27b0; }
+    .status-value.error { color: #ff5722; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Mic Controls */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .btn-mic {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #7b2d9e, #9c27b0);
+      color: #fff;
+      font-size: 2.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+      transition: transform 0.2s, background 0.3s;
+      outline: none;
+    }
+
+    .btn-mic:hover { transform: scale(1.06); }
+    .btn-mic:active { transform: scale(0.95); }
+
+    .btn-mic.recording {
+      background: linear-gradient(135deg, #d32f2f, #f44336);
+      box-shadow: 0 6px 24px rgba(244, 67, 54, 0.6);
+    }
+
+    .btn-mic.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-action {
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover:not(:disabled) { background: #444; }
+    .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Results Sections */
+    .section-box {
+      background: #181818;
+      border: 1px solid #2e2e2e;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #9c27b0;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .text-box {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #ddd;
+      min-height: 42px;
+      white-space: pre-wrap;
+    }
+
+    .meta-tag {
+      font-size: 0.75rem;
+      color: #777;
+      background: #252525;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Audio Player Section */
+    .audio-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>📞 KrishiMitra Voice Call <span class="badge">Developer Console</span></h1>
+      <p class="subtitle">Test isolated Sarvam Voice Call Backend (Saaras v3 STT + AI + Bulbul v3 TTS)</p>
+    </header>
+
+    <!-- Status Card -->
+    <div class="status-card">
+      <div class="status-label">Pipeline Status</div>
+      <div id="status-text" class="status-value">Ready</div>
+    </div>
+
+    <!-- Mic & Control Buttons -->
+    <div class="controls">
+      <button id="btn-mic" class="btn-mic" title="Click to Record">🎤</button>
+      <div style="display:flex; gap:10px;">
+        <button id="btn-play-response" class="btn-action" disabled>🔊 Play Response Audio</button>
+        <button id="btn-reset" class="btn-action">🔄 Clear Test Console</button>
+      </div>
+    </div>
+
+    <!-- Transcript Box -->
+    <div class="section-box">
+      <div class="section-title">
+        <span>🗣️ Farmer Recognized Transcript</span>
+        <span id="lang-tag" class="meta-tag">Lang: --</span>
+      </div>
+      <div id="transcript-text" class="text-box">Click the microphone button and ask a question in Hindi, Gujarati, Marathi, or English...</div>
+    </div>
+
+    <!-- AI Response Box -->
+    <div class="section-box">
+      <div class="section-title">
+        <span>🌱 KrishiMitra Spoken AI Response</span>
+        <span id="timing-tag" class="meta-tag">Time: --</span>
+      </div>
+      <div id="ai-response-text" class="text-box">AI response will appear here...</div>
+    </div>
+
+    <audio id="tts-audio-player" style="display:none;"></audio>
+  </div>
+
+  <footer>
+    KrishiMitra AI — Sarvam Voice Call Phase 1 Backend Test Interface
+  </footer>
+
+  <script>
+    'use strict';
+
+    let mediaRecorder = null;
+    let audioChunks   = [];
+    let isRecording   = false;
+    let lastAudioB64  = null;
+    let lastMimeType  = 'audio/wav';
+
+    const btnMic          = document.getElementById('btn-mic');
+    const btnPlay         = document.getElementById('btn-play-response');
+    const btnReset        = document.getElementById('btn-reset');
+    const statusText      = document.getElementById('status-text');
+    const transcriptText  = document.getElementById('transcript-text');
+    const aiResponseText  = document.getElementById('ai-response-text');
+    const langTag         = document.getElementById('lang-tag');
+    const timingTag       = document.getElementById('timing-tag');
+    const audioPlayer     = document.getElementById('tts-audio-player');
+
+    function setStatus(state, message) {
+      statusText.className = 'status-value ' + state;
+      statusText.textContent = message;
+    }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+        mediaRecorder.start(200);
+
+        isRecording = true;
+        btnMic.className = 'btn-mic recording';
+        btnMic.textContent = '🛑';
+        setStatus('listening', 'Listening... (Speak clearly into your microphone)');
+      } catch (err) {
+        setStatus('error', 'Microphone Error: ' + err.message);
+      }
+    }
+
+    function stopRecording() {
+      return new Promise(resolve => {
+        if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+          return resolve(null);
+        }
+        mediaRecorder.onstop = () => {
+          mediaRecorder.stream.getTracks().forEach(t => t.stop());
+          const blob = new Blob(audioChunks, { type: 'audio/webm' });
+          isRecording = false;
+          btnMic.className = 'btn-mic';
+          btnMic.textContent = '🎤';
+          resolve(blob);
+        };
+        mediaRecorder.stop();
+      });
+    }
+
+    async function processAudio(blob) {
+      if (!blob || blob.size === 0) {
+        setStatus('error', 'Empty audio recording');
+        return;
+      }
+
+      setStatus('processing', 'Transcribing (Sarvam Saaras v3)...');
+      transcriptText.textContent = 'Transcribing voice input...';
+      aiResponseText.textContent = 'Generating AI response...';
+      btnPlay.disabled = true;
+
+      const formData = new FormData();
+      formData.append('audio', blob, 'recording.webm');
+
+      const startTime = Date.now();
+
+      try {
+        const response = await fetch('/api/sarvam-voice', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        timingTag.textContent = `Time: ${elapsed}s`;
+
+        if (!data.success) {
+          setStatus('error', 'Error: ' + (data.error || 'Pipeline failed'));
+          if (data.transcript) transcriptText.textContent = data.transcript;
+          if (data.reply) aiResponseText.textContent = data.reply;
+          return;
+        }
+
+        // Success
+        langTag.textContent = 'Lang: ' + (data.language || 'detected').toUpperCase();
+        transcriptText.textContent = data.transcript || 'No transcript returned';
+        aiResponseText.textContent = data.reply || 'No response returned';
+
+        if (data.audioBase64) {
+          lastAudioB64 = data.audioBase64;
+          lastMimeType = data.mimeType || 'audio/wav';
+          btnPlay.disabled = false;
+          playAudio(lastAudioB64, lastMimeType);
+        } else {
+          setStatus('ready', 'Completed (No audio returned)');
+        }
+
+      } catch (err) {
+        setStatus('error', 'Network Error: ' + err.message);
+      }
+    }
+
+    function playAudio(b64, mime) {
+      try {
+        setStatus('speaking', 'Playing AI Voice Response (Sarvam Bulbul v3)...');
+        const binary = atob(b64);
+        const array = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+        const blob = new Blob([array], { type: mime });
+        const url = URL.createObjectURL(blob);
+
+        audioPlayer.src = url;
+        audioPlayer.onended = () => {
+          setStatus('ready', 'Ready');
+          URL.revokeObjectURL(url);
+        };
+        audioPlayer.onerror = () => {
+          setStatus('error', 'Audio playback failed');
+        };
+        audioPlayer.play();
+      } catch (e) {
+        setStatus('error', 'Audio decode failed: ' + e.message);
+      }
+    }
+
+    btnMic.addEventListener('click', async () => {
+      if (!isRecording) {
+        await startRecording();
+      } else {
+        setStatus('processing', 'Stopping recording...');
+        const blob = await stopRecording();
+        await processAudio(blob);
+      }
+    });
+
+    btnPlay.addEventListener('click', () => {
+      if (lastAudioB64) playAudio(lastAudioB64, lastMimeType);
+    });
+
+    btnReset.addEventListener('click', () => {
+      transcriptText.textContent = 'Click the microphone button and ask a question...';
+      aiResponseText.textContent = 'AI response will appear here...';
+      langTag.textContent = 'Lang: --';
+      timingTag.textContent = 'Time: --';
+      btnPlay.disabled = true;
+      lastAudioB64 = null;
+      setStatus('ready', 'Ready');
+    });
+  </script>
+</body>
+</html>

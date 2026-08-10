@@ -9,9 +9,19 @@ const path       = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 require('dotenv').config();
 
+process.on('uncaughtException', (err) => {
+  console.error('[SERVER UNCAUGHT EXCEPTION]', err ? (err.stack || err.message || err) : 'Unknown error');
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[SERVER UNHANDLED REJECTION]', reason);
+});
+
 const express    = require('express');
+const http       = require('http');
 const cors       = require('cors');
 const fs         = require('fs');
+const exotelVoicebotWsService = require('./services/exotelVoicebotWsService');
 
 const { requestLogger } = require('./middleware/logger');
 const { errorHandler }  = require('./middleware/errorHandler');
@@ -22,6 +32,8 @@ const visionRoutes  = require('./routes/vision');
 const weatherRoutes = require('./routes/weather');
 const schemesRoutes = require('./routes/schemes');
 const geminiRoutes  = require('./routes/gemini');
+const sarvamVoiceRoutes = require('./routes/sarvamVoice');
+const farmerCallRoutes  = require('./routes/farmerCall');
 
 // ── App Setup ────────────────────────────────────────────────────────────────
 const app  = express();
@@ -65,11 +77,18 @@ app.get('/api/health', (_req, res) => {
 });
 
 // ── API Routes ────────────────────────────────────────────────────────────────
-app.use('/api/chat',    chatRoutes);
-app.use('/api/vision',  visionRoutes);
-app.use('/api/weather', weatherRoutes);
-app.use('/api/schemes', schemesRoutes);
-app.use('/api/gemini',  geminiRoutes);
+app.use('/api/chat',         chatRoutes);
+app.use('/api/vision',       visionRoutes);
+app.use('/api/weather',      weatherRoutes);
+app.use('/api/schemes',      schemesRoutes);
+app.use('/api/gemini',       geminiRoutes);
+app.use('/api/sarvam-voice', sarvamVoiceRoutes);
+app.use('/api/farmer-call',  farmerCallRoutes);
+
+// ── Developer Test Console: Sarvam Voice Call ──────────────────────────────
+app.get('/sarvam-voice-test', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'pages', 'sarvam-voice-test.html'));
+});
 
 // ── Feed Caching Routes ──────────────────────────────────────────────────────
 const NEWS_CACHE_FILE = path.join(__dirname, '..', 'database', 'news', 'news_cache.json');
@@ -156,7 +175,10 @@ app.use(errorHandler);
 // ── Start ─────────────────────────────────────────────────────────────────────
 const ollama = require('./services/ollamaService');
 
-app.listen(PORT, async () => {
+const server = http.createServer(app);
+exotelVoicebotWsService.initExotelWsServer(server);
+
+server.listen(PORT, async () => {
   console.log('');
   console.log('╔══════════════════════════════════════════════════╗');
   console.log('║      KrishiMitra AI — Backend Server             ║');
@@ -190,8 +212,14 @@ app.listen(PORT, async () => {
     console.log('Switching to Offline Mode...');
   }
   console.log(`Ollama       : ${ollamaAvailable ? 'Available ✅' : 'Unavailable ❌'}`);
+  const hasSarvam = !!process.env.SARVAM_API_KEY;
+  const hasExotel = !!(process.env.EXOTEL_ACCOUNT_SID && process.env.EXOTEL_API_KEY && process.env.EXOTEL_API_TOKEN);
   console.log(`Weather API  : ${hasWeather ? 'Loaded ✅' : 'Missing ❌'}`);
   console.log(`News API     : ${hasNews ? 'Loaded ✅' : 'Missing ❌'}`);
+  console.log(`Sarvam Voice : ${hasSarvam ? 'Loaded ✅' : 'Missing ❌ (SARVAM_API_KEY missing)'}`);
+  console.log(`Exotel Call  : ${hasExotel ? 'Loaded ✅' : 'Missing ❌ (Exotel env credentials missing)'}`);
+  console.log(`Exotel WSS   : Active ✅ (ws://localhost:${PORT}/exotel-voicebot)`);
+  console.log(`Farmer Call  : Ready ✅ (/api/farmer-call/test)`);
   console.log(`Offline Mode : Ready ✅`);
 
   if (!hasGemini) {

@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="css/feed.css">
+  <link rel="stylesheet" href="css/voice.css">
+  <link rel="stylesheet" href="css/sarvamVoiceCall.css">
+  <link rel="stylesheet" href="css/farmerCall.css">
 </head>
 <body class="theme-default font-normal text-medium">
 
@@ -97,12 +100,30 @@
             </div>
           </button>
 
-          <!-- Ask AI Card -->
+          <!-- Offline AI Card -->
           <button class="action-card color-voice" onclick="switchTab('voice')">
-            <span class="action-icon">🎤</span>
+            <span class="action-icon">📴</span>
             <div class="action-card-text">
-              <span class="action-title" data-i18n="action_ask_ai">Ask AI (Voice)</span>
-              <span class="action-desc" data-i18n="action_ask_ai_desc">Talk in your language</span>
+              <span class="action-title" data-i18n="action_ask_ai">Offline AI</span>
+              <span class="action-desc" data-i18n="action_ask_ai_desc">Chat with Gemma 3 without internet</span>
+            </div>
+          </button>
+
+          <!-- Online Voice AI Card -->
+          <button class="action-card color-primary" onclick="switchTab('voice-call')">
+            <span class="action-icon">🎙️</span>
+            <div class="action-card-text">
+              <span class="action-title">Online Voice AI</span>
+              <span class="action-desc">Talk to AI in your language</span>
+            </div>
+          </button>
+
+          <!-- Call AI Card -->
+          <button class="action-card color-info" onclick="switchTab('farmer-call')">
+            <span class="action-icon">📞</span>
+            <div class="action-card-text">
+              <span class="action-title">Call AI</span>
+              <span class="action-desc">Talk to KrishiMitra from any phone</span>
             </div>
           </button>
 
@@ -278,12 +299,12 @@
       </div>
     </section>
 
-    <!-- TAB 3: VOICE ASSISTANT -->
-    <section id="view-voice" class="tab-view" aria-label="Voice Assistant">
+    <!-- TAB 3: OFFLINE AI -->
+    <section id="view-voice" class="tab-view" aria-label="Offline AI">
       <div class="voice-hero card">
-        <div class="assistant-logo">🎙</div>
-        <h2 class="voice-title" data-i18n="voice_title">Ask KrishiMitra voice AI</h2>
-        <p class="voice-desc" data-i18n="voice_desc">Hold the microphone and ask your questions. Speak in your native language.</p>
+        <div class="assistant-logo">📴</div>
+        <h2 class="voice-title" data-i18n="voice_title">📴 Offline AI</h2>
+        <p class="voice-desc" data-i18n="voice_desc">Chat with Gemma 3 without internet — Local AI assistant powered by Ollama + Gemma 3</p>
         
         <!-- Assistant Language Selector -->
         <div class="voice-lang-bar">
@@ -359,6 +380,125 @@
         </div>
         <!-- ──────────────────────────────────────────────────────────────── -->
 
+      </div>
+    </section>
+
+    <!-- TAB 3.6: CALL AI (EXOTEL TELEPHONY) -->
+    <section id="view-farmer-call" class="tab-view" aria-label="Call AI">
+      <div class="farmer-call-hero card">
+        <span class="hero-tag">EXOTEL TELEPHONY ASSISTANT</span>
+        <h2 class="farmer-call-title">📞 Call AI</h2>
+        <p class="farmer-call-desc">Talk to KrishiMitra from any phone — Call our AI assistant without opening the app</p>
+      </div>
+
+      <!-- Phone Number Information Card -->
+      <div class="phone-number-card">
+        <div class="phone-info-left">
+          <div class="phone-icon-circle">📞</div>
+          <div class="phone-details-text">
+            <h3>KrishiMitra Helpline ExoPhone</h3>
+            <p>Call and speak in Hindi, Gujarati, Marathi, Punjabi, Tamil, or English</p>
+          </div>
+        </div>
+        <div>
+          <span id="farmer-phone-display" class="phone-number-display">ExoPhone Active</span>
+        </div>
+      </div>
+
+      <!-- Phone Call Test Simulator -->
+      <div class="farmer-call-simulator">
+        <div class="simulator-header">
+          <div class="simulator-title">
+            <span>🧪 Call AI Pipeline Simulator</span>
+          </div>
+          <div id="farmer-call-status" class="farmer-call-status">
+            <span class="status-dot-phone"></span>
+            <span id="farmer-call-status-label">🟢 Ready — Enter farming query to test</span>
+          </div>
+        </div>
+
+        <div class="call-input-row">
+          <select id="farmer-call-lang-select" class="select-call-lang" aria-label="Select Language">
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="mr">मराठी (Marathi)</option>
+            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="en">English</option>
+          </select>
+          <input type="text" id="farmer-call-input-text" placeholder="Type a spoken phone query (e.g. मेरी गेहूं की फसल में पानी कब देना चाहिए?)..." class="input-call-text">
+          <button id="btn-submit-phone-test" class="btn-send-test-call">
+            <span>📞 Call AI</span>
+          </button>
+        </div>
+
+        <!-- Spoken Output Card -->
+        <div class="call-output-box">
+          <div class="call-output-title">
+            <span>🌱 KrishiMitra Spoken Answer</span>
+            <span id="farmer-call-output-meta" class="meta-tag">SARVAM BULBUL V3</span>
+          </div>
+          <div id="farmer-call-output-text" class="call-output-text">Enter a farming question above and click "Call AI" to simulate a phone conversation...</div>
+        </div>
+
+        <!-- Preset Chips -->
+        <div>
+          <div class="preset-chips-title">Try Asking (One-Tap Test):</div>
+          <div class="farmer-preset-chips">
+            <button class="chip-phone-preset" onclick="testFarmerCallPreset('मेरी गेहूं की फसल में पानी कब देना चाहिए?', 'hi')">🇮🇳 Hindi: "गेहूं में पानी कब दें?"</button>
+            <button class="chip-phone-preset" onclick="testFarmerCallPreset('ઘઉંના પાકમાં પાણી ક્યારે આપવું જોઈએ?', 'gu')">🇮🇳 Gujarati: "ઘઉંના પાકમાં પાણી ક્યારે આપવું?"</button>
+            <button class="chip-phone-preset" onclick="testFarmerCallPreset('गहू पिकाला पाणी कधी द्यावे?', 'mr')">🇮🇳 Marathi: "गहू पिकाला पाणी कधी द्यावे?"</button>
+            <button class="chip-phone-preset" onclick="testFarmerCallPreset('When should I irrigate my wheat crop?', 'en')">🇬🇧 English: "When to irrigate wheat?"</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3.5: ONLINE VOICE AI -->
+    <section id="view-voice-call" class="tab-view" aria-label="Online Voice AI">
+      <div class="voice-call-hero card">
+        <span class="hero-badge">SARVAM AI BROWSER VOICE</span>
+        <h2 class="voice-call-title">🎙️ Online Voice AI</h2>
+        <p class="voice-call-desc">Talk to AI in your language — Voice assistant powered by Sarvam AI</p>
+      </div>
+
+      <div class="call-simulator-card">
+        <!-- Call Status -->
+        <div id="call-status-indicator" class="call-status-indicator">
+          <span class="status-dot-call"></span>
+          <span id="call-status-label">🟢 Ready — Tap phone icon to start call</span>
+        </div>
+
+        <!-- Phone Call Button -->
+        <button id="btn-phone-call" class="btn-phone-call" aria-label="Start Voice Call">📞</button>
+
+        <!-- Conversation Display Cards -->
+        <div class="call-conversation-box">
+          <!-- Recognized Spoken Question -->
+          <div class="call-card-item">
+            <div class="call-card-header">
+              <span>🗣️ Farmer Recognized Speech</span>
+              <span id="call-lang-badge" class="meta-tag">LANG: --</span>
+            </div>
+            <div id="call-transcript-display" class="call-card-body">Tap the green phone button and speak your query...</div>
+          </div>
+
+          <!-- Spoken AI Answer -->
+          <div class="call-card-item">
+            <div class="call-card-header">
+              <span>🌱 KrishiMitra Spoken AI Answer</span>
+              <span class="meta-tag">SARVAM BULBUL V3</span>
+            </div>
+            <div id="call-response-display" class="call-card-body">AI voice response will play automatically...</div>
+          </div>
+        </div>
+
+        <!-- Preset Spoken Question Chips -->
+        <div class="call-suggestions-row">
+          <button class="chip-call-preset" onclick="askSarvamCallPreset('मेरी गेहूं की फसल पीली हो रही है')">"मेरी गेहूं की फसल पीली हो रही है"</button>
+          <button class="chip-call-preset" onclick="askSarvamCallPreset('कपास में खाद कब डालें?')">"कपास में खाद कब डालें?"</button>
+          <button class="chip-call-preset" onclick="askSarvamCallPreset('चना बोने का सही समय क्या है?')">"चना बोने का सही समय क्या है?"</button>
+        </div>
       </div>
     </section>
 
@@ -873,12 +1013,28 @@
         <span class="nav-label" data-i18n="nav_vision">Vision Lab</span>
       </button>
 
-      <!-- Voice Assistant Link -->
-      <button class="nav-item" onclick="switchTab('voice')" id="nav-btn-voice" aria-label="Voice AI Assistant">
+      <!-- Offline AI Link -->
+      <button class="nav-item" onclick="switchTab('voice')" id="nav-btn-voice" aria-label="Offline AI">
         <div class="nav-icon-container">
           <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3m5 10h2a7 7 0 0 1-14 0h2a5 5 0 0 0 10 0z"/></svg>
         </div>
-        <span class="nav-label" data-i18n="nav_voice">Voice AI</span>
+        <span class="nav-label" data-i18n="nav_voice">Offline AI</span>
+      </button>
+
+      <!-- Online Voice AI Link -->
+      <button class="nav-item" onclick="switchTab('voice-call')" id="nav-btn-voice-call" aria-label="Online Voice AI">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
+        </div>
+        <span class="nav-label">Online Voice AI</span>
+      </button>
+
+      <!-- Call AI Link -->
+      <button class="nav-item" onclick="switchTab('farmer-call')" id="nav-btn-farmer-call" aria-label="Call AI">
+        <div class="nav-icon-container">
+          <svg class="icon-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </div>
+        <span class="nav-label">Call AI</span>
       </button>
 
       <!-- Mandi Prices Link -->
@@ -981,6 +1137,9 @@
   <script src="js/newsAI.js"></script>
   <script src="js/feedService.js"></script>
   <script src="js/feed.js"></script>
+  <script src="js/voiceAssistant.js"></script>
+  <script src="js/sarvamVoiceCall.js"></script>
+  <script src="js/farmerCall.js"></script>
 
   <!-- ── kmSendText: called by the text input box ───────────────────────── -->
   <script>
