@@ -1,0 +1,42 @@
+{
+  "pipeline_name": "KrishiMitra AI Quality Grader Preprocessing",
+  "target_model": "MobileNetV2 (Transfer Learning)",
+  "image_properties": {
+    "target_width": 224,
+    "target_height": 224,
+    "color_mode": "RGB",
+    "channels": 3
+  },
+  "normalization": {
+    "type": "ImageNet",
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225]
+  },
+  "class_mapping": {
+    "Fresh": 0,
+    "Rotten": 1
+  },
+  "inverse_class_mapping": {
+    "0": "Fresh",
+    "1": "Rotten"
+  },
+  "augmentation_policy": {
+    "strategy": "Conservative Agricultural Freshness",
+    "random_horizontal_flip_prob": 0.5,
+    "random_rotation_degrees": 15,
+    "random_affine_scale_range": [0.90, 1.10],
+    "random_affine_shear_degrees": 5,
+    "color_jitter": {
+      "brightness": 0.15,
+      "contrast": 0.15,
+      "saturation": 0.10,
+      "hue": 0.02
+    },
+    "note": "Applied dynamically on-the-fly during training. Validation and test sets are never augmented."
+  },
+  "batch_defaults": {
+    "batch_size": 32,
+    "cpu_laptop_batch_size": 16,
+    "num_workers": 0
+  }
+}

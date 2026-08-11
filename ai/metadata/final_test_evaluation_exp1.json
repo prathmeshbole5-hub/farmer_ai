@@ -1,0 +1,63 @@
+{
+  "evaluation_type": "FINAL_UNBIASED_TEST_SET_EVALUATION",
+  "checkpoint_used": "C:\\Users\\shreya gupta\\Downloads\\farmer_ai-main\\farmer_ai-main\\ai\\models\\quality_grader_mobilenetv2_best.pt",
+  "checkpoint_source_epoch": 9,
+  "dataset_split": "test",
+  "total_test_images": 1797,
+  "test_loss": 0.1309,
+  "final_test_accuracy": 0.9538,
+  "test_error_rate": 0.0462,
+  "correct_predictions": 1714,
+  "incorrect_predictions": 83,
+  "confusion_matrix": {
+    "matrix": [
+      [
+        877,
+        38
+      ],
+      [
+        45,
+        837
+      ]
+    ],
+    "format": "[[True Fresh, Fresh->Rotten], [Rotten->Fresh, True Rotten]]",
+    "true_fresh": 877,
+    "fresh_predicted_rotten": 38,
+    "true_rotten": 837,
+    "rotten_predicted_fresh": 45
+  },
+  "per_class_metrics": {
+    "Fresh": {
+      "precision": 0.9512,
+      "recall": 0.9585,
+      "f1_score": 0.9548,
+      "total_support": 915
+    },
+    "Rotten": {
+      "precision": 0.9566,
+      "recall": 0.949,
+      "f1_score": 0.9528,
+      "total_support": 882
+    }
+  },
+  "macro_metrics": {
+    "macro_precision": 0.9539,
+    "macro_recall": 0.9537,
+    "macro_f1": 0.9538
+  },
+  "validation_vs_test_comparison": {
+    "best_validation_epoch": 9,
+    "best_validation_loss": 0.13212,
+    "best_validation_accuracy": 0.95,
+    "final_test_loss": 0.1309,
+    "final_test_accuracy": 0.9538,
+    "generalization_delta_accuracy": 0.38
+  },
+  "integrity_confirmation": {
+    "evaluated_images_count": 1797,
+    "all_images_evaluated_once": true,
+    "no_training_occurred": true,
+    "model_weights_unchanged": true,
+    "test_images_unmodified": true
+  }
+}

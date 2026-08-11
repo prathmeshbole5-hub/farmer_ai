@@ -29,6 +29,7 @@ const { errorHandler }  = require('./middleware/errorHandler');
 // ── Routes ──────────────────────────────────────────────────────────────────
 const chatRoutes    = require('./routes/chat');
 const visionRoutes  = require('./routes/vision');
+const qualityRoutes = require('./routes/quality');
 const weatherRoutes = require('./routes/weather');
 const schemesRoutes = require('./routes/schemes');
 const geminiRoutes  = require('./routes/gemini');
@@ -79,6 +80,7 @@ app.get('/api/health', (_req, res) => {
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use('/api/chat',         chatRoutes);
 app.use('/api/vision',       visionRoutes);
+app.use('/api/quality',      qualityRoutes);
 app.use('/api/weather',      weatherRoutes);
 app.use('/api/schemes',      schemesRoutes);
 app.use('/api/gemini',       geminiRoutes);
