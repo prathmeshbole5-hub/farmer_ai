@@ -1,0 +1,59 @@
+{
+  "experiment_name": "Quality_Grader_MobileNetV2_Experiment_1",
+  "task": "Binary Freshness Classification",
+  "classes": {
+    "0": "Fresh",
+    "1": "Rotten"
+  },
+  "hyperparameters": {
+    "model_architecture": "MobileNetV2 (Transfer Learning)",
+    "weights_initialization": "MobileNet_V2_Weights.DEFAULT",
+    "feature_extractor_status": "FROZEN",
+    "trainable_head": "Dropout(0.2) -> Linear(1280, 2)",
+    "input_resolution": [224, 224],
+    "batch_size": 16,
+    "optimizer": "Adam",
+    "initial_learning_rate": 0.001,
+    "loss_function": "CrossEntropyLoss",
+    "max_epochs": 10,
+    "early_stopping": {
+      "enabled": true,
+      "monitor": "val_loss",
+      "patience": 3,
+      "min_delta": 0.001
+    },
+    "lr_scheduler": {
+      "type": "ReduceLROnPlateau",
+      "monitor": "val_loss",
+      "factor": 0.5,
+      "patience": 2,
+      "min_lr": 0.000001
+    },
+    "random_seed": 42,
+    "device": "cpu"
+  },
+  "dataset_partitions": {
+    "train_set": "ai/dataset/processed/train (Used for parameter updates)",
+    "validation_set": "ai/dataset/processed/validation (Used ONLY for checkpointing and early stopping)",
+    "test_set": "ai/dataset/processed/test (STRICTLY UNTOUCHED during training/model selection)"
+  },
+  "monitoring": [
+    "train_loss",
+    "train_accuracy",
+    "val_loss",
+    "val_accuracy",
+    "learning_rate"
+  ],
+  "evaluation_metrics_support": [
+    "accuracy",
+    "precision",
+    "recall",
+    "f1_score",
+    "confusion_matrix"
+  ],
+  "artifact_destinations": {
+    "best_model_path": "ai/models/quality_grader_mobilenetv2_best.pt",
+    "checkpoint_path": "ai/models/quality_grader_checkpoint.pt",
+    "history_log_path": "ai/metadata/training_history_exp1.json"
+  }
+}

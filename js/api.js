@@ -261,6 +261,63 @@ async function getSchemes(filters = {}) {
   }
 }
 
+// ── gradeQuality ─────────────────────────────────────────────────────────────
+/**
+ * Upload a produce photo for AI Quality Grading (Fresh vs. Rotten).
+ *
+ * @param {File|Blob} imageFile - Image file from file input or camera capture
+ * @param {Object} [options={}] - Optional metadata or language options
+ * @returns {Promise<{
+ *   success: boolean,
+ *   quality?: 'Fresh' | 'Rotten',
+ *   class_id?: number,
+ *   confidence?: number,
+ *   probabilities?: { Fresh: number, Rotten: number },
+ *   error?: string,
+ *   userError?: string
+ * }>}
+ */
+async function gradeQuality(imageFile, options = {}) {
+  try {
+    if (!imageFile) {
+      return {
+        success: false,
+        error: 'No image file provided for quality grading.',
+        userError: 'Please select or capture a produce photo.'
+      };
+    }
+
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/quality`,
+      {
+        method: 'POST',
+        // Do not set Content-Type header; browser automatically sets multipart/form-data with boundary
+        body: formData
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success:   false,
+        error:     data.error || `Server error ${res.status}`,
+        userError: classifyError(null, data)
+      };
+    }
+
+    return { success: true, ...data };
+
+  } catch (err) {
+    const userError = classifyError(err);
+    console.error('[KrishiMitra API] gradeQuality error:', err);
+    return { success: false, error: err.message, userError };
+  }
+}
+
 // ── Display helper ────────────────────────────────────────────────────────────
 /**
  * Show an error to the user in a non-crashing way.
@@ -294,6 +351,7 @@ if (typeof module !== 'undefined' && module.exports) {
     checkBackendHealth,
     sendChat,
     scanCrop,
+    gradeQuality,
     getWeather,
     getSchemes,
     showApiError,
@@ -306,6 +364,7 @@ if (typeof module !== 'undefined' && module.exports) {
     checkBackendHealth,
     sendChat,
     scanCrop,
+    gradeQuality,
     getWeather,
     getSchemes,
     showApiError,
@@ -313,3 +372,4 @@ if (typeof module !== 'undefined' && module.exports) {
     ERROR_MESSAGES
   };
 }
+

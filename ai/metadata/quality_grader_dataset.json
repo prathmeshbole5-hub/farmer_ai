@@ -1,0 +1,81 @@
+{
+  "dataset_name": "KrishiMitra AI Quality Grader Processed Dataset",
+  "class_mapping": {
+    "Fresh": 0,
+    "Rotten": 1
+  },
+  "target_attribute": "quality_label",
+  "total_original_images": 12000,
+  "total_usable_images": 11995,
+  "removed_ignored_images": 5,
+  "quality_counts": {
+    "Fresh": 6109,
+    "Rotten": 5886
+  },
+  "splits": {
+    "train": {
+      "total": 8398,
+      "Fresh": 4277,
+      "Rotten": 4121,
+      "ratio": 0.7001
+    },
+    "validation": {
+      "total": 1800,
+      "Fresh": 917,
+      "Rotten": 883,
+      "ratio": 0.1501
+    },
+    "test": {
+      "total": 1797,
+      "Fresh": 915,
+      "Rotten": 882,
+      "ratio": 0.1498
+    }
+  },
+  "duplicate_analysis": {
+    "total_duplicate_groups": 224,
+    "duplicate_files_count": 456,
+    "duplicates_within_same_class": 229,
+    "duplicates_cross_commodity_same_label": 0,
+    "duplicates_conflicting_labels": 2,
+    "leakage_protection": "Exact duplicate hash bundles assigned atomically to the same split partition"
+  },
+  "conflicting_duplicate_groups": [
+    {
+      "hash": "146a1589c2871c8e557a2e978d860f31",
+      "classes": [
+        "RottenCarrot",
+        "FreshCarrot"
+      ],
+      "labels": [
+        "Rotten",
+        "Fresh"
+      ],
+      "paths": [
+        "Vegetables\\FreshCarrot\\freshCarrot (534).jpg",
+        "Vegetables\\RottenCarrot\\rottenCarrot (31).jpg",
+        "Vegetables\\RottenCarrot\\rottenCarrot (549).jpg"
+      ]
+    },
+    {
+      "hash": "2a0d0bf3d15c65719ec9fff7b6ea8851",
+      "classes": [
+        "RottenCarrot",
+        "FreshCarrot"
+      ],
+      "labels": [
+        "Rotten",
+        "Fresh"
+      ],
+      "paths": [
+        "Vegetables\\FreshCarrot\\freshCarrot (536).jpg",
+        "Vegetables\\RottenCarrot\\rottenCarrot (527).jpg"
+      ]
+    }
+  ],
+  "warnings": [
+    "CRITICAL CONFLICT: Image hash 146a1589 has conflicting labels ['Rotten', 'Fresh'] across classes ['RottenCarrot', 'FreshCarrot']. Removed all 3 copies to prevent label corruption.",
+    "CRITICAL CONFLICT: Image hash 2a0d0bf3 has conflicting labels ['Rotten', 'Fresh'] across classes ['RottenCarrot', 'FreshCarrot']. Removed all 2 copies to prevent label corruption."
+  ],
+  "seed": 42
+}

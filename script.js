@@ -1344,8 +1344,32 @@ const triggerSimulatedAIAnalysis = async () => {
   const previewImg = document.getElementById('image-preview');
   const mod = appState.activeVisionModule || 'disease';
 
-  if (mod !== 'disease' && mod !== 'soil') {
-    if (loading) loading.classList.remove('hidden');
+  // 1. Validate Image Selection
+  let imageFile = appState.selectedFile;
+  if (!imageFile && previewImg && previewImg.src && !previewImg.src.endsWith('#')) {
+    try {
+      const blobRes = await fetch(previewImg.src);
+      const blob = await blobRes.blob();
+      imageFile = new File([blob], `${mod}_scan.jpg`, { type: blob.type || 'image/jpeg' });
+    } catch (e) {
+      console.warn('[Vision UI] Could not convert preview to file:', e);
+    }
+  }
+
+  if (!imageFile && (!previewImg || !previewImg.src || previewImg.src.endsWith('#'))) {
+    alert('Please upload or take a photo first.');
+    return;
+  }
+
+  // 2. Mock Modules (Growth Monitor & Insurance Claim)
+  if (mod !== 'disease' && mod !== 'soil' && mod !== 'grade') {
+    if (loading) {
+      const loadH = loading.querySelector('.loading-heading');
+      const loadSub = loading.querySelector('.loading-subheading');
+      if (loadH) loadH.textContent = 'Processing Agricultural Image...';
+      if (loadSub) loadSub.textContent = 'Analyzing field canopy and structure';
+      loading.classList.remove('hidden');
+    }
     if (uploadPanel) uploadPanel.classList.add('hidden');
     setTimeout(() => {
       if (loading) loading.classList.add('hidden');
@@ -1353,6 +1377,7 @@ const triggerSimulatedAIAnalysis = async () => {
       const sampleName = appState.selectedSampleImage || 'default';
       const sampleImg = previewImg ? previewImg.src : '';
       if (mod === 'growth') res = mockAnalyzeGrowth(sampleName, sampleImg);
+      if (mod === 'insurance') res = mockInsuranceReport(sampleName, sampleImg);
       if (resultsArea && res) {
         renderVisionResults(res);
         resultsArea.classList.remove('hidden');
@@ -1361,23 +1386,105 @@ const triggerSimulatedAIAnalysis = async () => {
     return;
   }
 
-  // Real TensorFlow CNN Inference via POST /api/vision
-  if (loading) loading.classList.remove('hidden');
+  // 3. Real MobileNetV2 Quality Grader Inference via POST /api/quality
+  if (mod === 'grade') {
+    if (loading) {
+      const loadH = loading.querySelector('.loading-heading');
+      const loadSub = loading.querySelector('.loading-subheading');
+      if (loadH) loadH.textContent = 'AI is checking produce quality...';
+      if (loadSub) loadSub.textContent = 'Evaluating freshness and grade using MobileNetV2 Deep Learning';
+      loading.classList.remove('hidden');
+    }
+    if (uploadPanel) uploadPanel.classList.add('hidden');
+    if (resultsArea) resultsArea.classList.add('hidden');
+
+    try {
+      let data;
+      if (window.KrishiMitraAPI && typeof window.KrishiMitraAPI.gradeQuality === 'function') {
+        data = await window.KrishiMitraAPI.gradeQuality(imageFile);
+      } else {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        const apiBase = (window.KrishiMitraConfig && window.KrishiMitraConfig.API_BASE_URL) || 'http://localhost:5000/api';
+        const endpoint = apiBase.endsWith('/api') ? `${apiBase}/quality` : `${apiBase}/api/quality`;
+        const res = await fetch(endpoint, { method: 'POST', body: formData });
+        data = await res.json();
+      }
+
+      if (!data || !data.success) {
+        throw new Error(data?.userError || data?.error || 'Unable to analyze this image. Please try another photo.');
+      }
+
+      const isFresh = data.quality === 'Fresh' || data.class_id === 0;
+      const confNum = typeof data.confidence === 'number' ? data.confidence : 0.95;
+      const confPercent = (confNum * 100).toFixed(1);
+
+      let probFresh = isFresh ? confNum : (1 - confNum);
+      let probRotten = isFresh ? (1 - confNum) : confNum;
+
+      if (data.probabilities) {
+        if (typeof data.probabilities.Fresh === 'number') probFresh = data.probabilities.Fresh;
+        if (typeof data.probabilities.Rotten === 'number') probRotten = data.probabilities.Rotten;
+      }
+
+      const probFreshPercent = (probFresh * 100).toFixed(1);
+      const probRottenPercent = (probRotten * 100).toFixed(1);
+
+      const qualityBadge = isFresh ? '🌱 Fresh' : '⚠️ Rotten / Spoiled';
+      const qualityBadgeType = isFresh ? 'green' : 'red';
+      const advisoryText = isFresh
+        ? 'Produce appears fresh. Store it properly and consider dispatching it while quality is high.'
+        : 'Produce appears spoiled. Separate it from fresh produce to reduce the risk of spoilage spreading.';
+
+      const report = {
+        id: 'GRD-' + Date.now().toString().slice(-6),
+        type: 'AI Produce Quality Grader (MobileNetV2)',
+        date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+        img: previewImg ? previewImg.src : '',
+        details: [
+          { label: 'AI Quality Assessment', value: qualityBadge, isAccent: true, type: qualityBadgeType },
+          { label: 'AI Confidence', value: `${confPercent}%`, type: isFresh ? 'green' : 'yellow' },
+          { label: 'Freshness Probability', value: `Fresh: ${probFreshPercent}% | Rotten: ${probRottenPercent}%`, type: 'info' },
+          { label: 'Evaluation Model', value: 'AI model: MobileNetV2 • Tested accuracy: 95.38%', type: 'info' }
+        ],
+        recommendations: [
+          { title: 'Quality & Storage Advisory (गुणवत्ता सलाह)', text: advisoryText }
+        ],
+        extraInfo: {
+          title: 'Assessment Notice',
+          text: 'AI assessment only. Results may vary with image quality, lighting, produce type, and condition.'
+        }
+      };
+
+      appState.reportsHistory.unshift(report);
+
+      if (loading) loading.classList.add('hidden');
+      if (resultsArea) {
+        renderVisionResults(report);
+        resultsArea.classList.remove('hidden');
+      }
+
+    } catch (err) {
+      console.error('[Quality Grader Error]:', err);
+      if (loading) loading.classList.add('hidden');
+      if (uploadPanel) uploadPanel.classList.remove('hidden');
+      alert(`Quality Grader: ${err.message || 'AI Quality Grader is temporarily unavailable. Please try again.'}`);
+    }
+    return;
+  }
+
+  // 4. Real TensorFlow CNN Inference via POST /api/vision (Disease & Soil)
+  if (loading) {
+    const loadH = loading.querySelector('.loading-heading');
+    const loadSub = loading.querySelector('.loading-subheading');
+    if (loadH) loadH.textContent = 'Processing Crop Image...';
+    if (loadSub) loadSub.textContent = 'Analyzing soil condition, leaf health, and structures';
+    loading.classList.remove('hidden');
+  }
   if (uploadPanel) uploadPanel.classList.add('hidden');
   if (resultsArea) resultsArea.classList.add('hidden');
 
   try {
-    let imageFile = appState.selectedFile;
-    if (!imageFile && previewImg && previewImg.src) {
-      const blobRes = await fetch(previewImg.src);
-      const blob = await blobRes.blob();
-      imageFile = new File([blob], 'crop_scan.jpg', { type: blob.type || 'image/jpeg' });
-    }
-
-    if (!imageFile) {
-      throw new Error('No agricultural image file selected.');
-    }
-
     const formData = new FormData();
     formData.append('image', imageFile);
 

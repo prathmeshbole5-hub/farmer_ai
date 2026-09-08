@@ -1,0 +1,33 @@
+{
+  "model_name": "KrishiMitra AI Quality Grader (MobileNetV2)",
+  "task": "Binary Freshness Classification",
+  "base_architecture": "torchvision.models.mobilenet_v2",
+  "weights_specification": "MobileNet_V2_Weights.DEFAULT",
+  "input_shape": [null, 3, 224, 224],
+  "num_classes": 2,
+  "class_mapping": {
+    "Fresh": 0,
+    "Rotten": 1
+  },
+  "inverse_class_mapping": {
+    "0": "Fresh",
+    "1": "Rotten"
+  },
+  "classifier_head": {
+    "in_features": 1280,
+    "out_features": 2,
+    "dropout_rate": 0.2,
+    "activation": "Logits / CrossEntropyLoss"
+  },
+  "initial_training_configuration": {
+    "mode": "Feature Extraction (Frozen Backbone)",
+    "freeze_backbone": true,
+    "trainable_components": [
+      "classifier.0 (Dropout)",
+      "classifier.1 (Linear 1280 -> 2)"
+    ],
+    "frozen_components": [
+      "features (all convolutional and inverted residual blocks)"
+    ]
+  }
+}
